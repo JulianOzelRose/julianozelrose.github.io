@@ -1,0 +1,99 @@
+<!-- portfolio/about/index.html -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Contact | Julian Ozel Rose</title>
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+
+    <div id="navbar"></div>
+
+
+    <main class="contact-page">
+
+        <section class="contact-section">
+            <div class="container">
+
+                <header class="contact-header">
+                    <h1 class="contact-title">
+                        Contact
+                    </h1>
+
+                    <p class="contact-intro">
+                        Feel free to reach out through LinkedIn or email.
+                    </p>
+                </header>
+
+
+                <div class="contact-links">
+
+                    <div class="contact-item">
+                        <h2 class="contact-item-title">
+                            LinkedIn
+                        </h2>
+
+                        <a
+                            class="contact-link"
+                            href="https://www.linkedin.com/in/julian-ozel-rose/"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            linkedin.com/in/julian-ozel-rose
+                        </a>
+                    </div>
+
+
+                    <div class="contact-item">
+                        <h2 class="contact-item-title">
+                            Email
+                        </h2>
+
+                        <button
+                            class="contact-link contact-email"
+                            type="button"
+                            id="email-link">
+                            Show Email
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <div id="footer"></div>
+
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+    <script>
+        const emailLink = document.getElementById('email-link');
+
+        emailLink.addEventListener('click', () => {
+            const user = ['julian', 'ozel', 'rose'].join('.');
+            const domain = ['outlook', 'com'].join('.');
+            const email = `${user}@${domain}`;
+
+            emailLink.outerHTML = `
+                <a
+                    class="contact-link contact-email"
+                    href="mailto:${email}">
+                    ${email}
+                </a>
+            `;
+        });
+    </script>
+
+</body>
+</html>

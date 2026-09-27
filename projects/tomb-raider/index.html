@@ -1,0 +1,168 @@
+<!-- /projects/tomb-raider/index.html -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Tomb Raider Remastered Savegame Editor | Julian Ozel Rose</title>
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+
+    <div id="navbar"></div>
+
+
+    <main class="project-page">
+
+        <section class="project-detail-section">
+            <div class="container">
+
+                <header class="project-detail-header">
+
+                    <p class="project-detail-category">
+                        C# / Reverse Engineering
+                    </p>
+
+                    <h1 class="project-detail-title">
+                        Tomb Raider Remastered Savegame Editor
+                    </h1>
+
+                    <p class="project-detail-intro">
+                        A savegame editor for Tomb Raider I-VI Remastered,
+                        built by reverse engineering binary save formats
+                        across multiple games and platforms.
+                    </p>
+
+                    <div class="project-detail-actions">
+
+                        <a
+                            class="btn btn-primary"
+                            href="https://github.com/JulianOzelRose/TRR-SaveMaster/releases"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Download
+                        </a>
+
+                        <a
+                            class="btn btn-outline-secondary"
+                            href="https://github.com/JulianOzelRose/TRR-SaveMaster"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            View on GitHub
+                        </a>
+
+                    </div>
+
+                </header>
+
+
+                <div class="project-detail-content">
+
+                    <div class="project-detail-image-container">
+                        <img
+                            class="project-detail-image"
+                            src="/assets/images/tomb-raider-thumbnail.png"
+                            alt="Tomb Raider Remastered Savegame Editor interface">
+                    </div>
+
+
+                    <section class="project-detail-block">
+                        <h2 class="project-detail-heading">
+                            Overview
+                        </h2>
+
+                        <p class="project-detail-text">
+                            TRR-SaveMaster is an open-source savegame editor for
+                            Tomb Raider I-VI Remastered. It provides a graphical
+                            interface for modifying game state without manually
+                            editing binary save files.
+                        </p>
+
+                        <p class="project-detail-text">
+                            The editor supports savegames from PC, PlayStation 4,
+                            Nintendo Switch, Android, and iOS, with support for
+                            multiple savegame versions and game-specific binary
+                            structures.
+                        </p>
+                    </section>
+
+                    <section class="project-detail-block">
+                        <h2 class="project-detail-heading">
+                            Features
+                        </h2>
+
+                        <ul class="project-detail-list">
+                            <li>Edit inventory, weapons, ammunition, and health</li>
+                            <li>Edit player position and teleport coordinates</li>
+                            <li>Edit level and playthrough statistics</li>
+                            <li>Unlock New Game+, outfits, and other content</li>
+                            <li>Supports Tomb Raider I-VI Remastered</li>
+                            <li>Supports PC, PS4, Switch, Android, and iOS save formats</li>
+                        </ul>
+                    </section>
+
+
+                    <section class="project-detail-block">
+                        <h2 class="project-detail-heading">
+                            Technical Highlights
+                        </h2>
+
+                        <ul class="project-detail-list">
+                            <li>
+                                Reverse engineered the binary savegame formats used across
+                                Tomb Raider I-VI Remastered
+                            </li>
+                            <li>
+                                Reverse engineered and implemented Tomb Raider VI's proprietary
+                                LZW compression and decompression format
+                            </li>
+                            <li>
+                                Recreated game deserialization logic for Tomb Raider I-VI to
+                                locate dynamically positioned savegame data
+                            </li>
+                            <li>
+                                Dumped and mapped game entity tables to build lookup tables for
+                                identifying serialized entities
+                            </li>
+                            <li>
+                                Accounted for structural differences across game versions,
+                                platforms, and savegame formats
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section class="project-detail-block">
+                        <h2 class="project-detail-heading">
+                            Technologies
+                        </h2>
+
+                        <div class="project-detail-technologies">
+                            <span class="project-technology">C#</span>
+                            <span class="project-technology">.NET</span>
+                            <span class="project-technology">WinForms</span>
+                            <span class="project-technology">Binary Formats</span>
+                            <span class="project-technology">Reverse Engineering</span>
+                        </div>
+                    </section>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <div id="footer"></div>
+
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+</body>
+</html>
