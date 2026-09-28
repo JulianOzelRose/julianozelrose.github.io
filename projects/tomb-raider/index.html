@@ -78,16 +78,17 @@
 
                         <p class="project-detail-text">
                             TRR-SaveMaster is an open-source savegame editor for
-                            Tomb Raider I-VI Remastered. It provides a graphical
-                            interface for modifying game state without manually
-                            editing binary save files.
+                            Tomb Raider I-VI Remastered, developed through reverse
+                            engineering of the games' binary save formats and
+                            serialization logic.
                         </p>
 
                         <p class="project-detail-text">
-                            The editor supports savegames from PC, PlayStation 4,
-                            Nintendo Switch, Android, and iOS, with support for
-                            multiple savegame versions and game-specific binary
-                            structures.
+                            The editor supports all six remastered games and handles
+                            save formats from PC, PlayStation 4, Nintendo Switch,
+                            Android, and iOS. It accounts for differences in binary
+                            structure between individual games, platforms, and
+                            savegame versions.
                         </p>
                     </section>
 
@@ -98,7 +99,7 @@
 
                         <ul class="project-detail-list">
                             <li>Edit inventory, weapons, ammunition, and health</li>
-                            <li>Edit player position and teleport coordinates</li>
+                            <li>Edit player position to teleport within a level</li>
                             <li>Edit level and playthrough statistics</li>
                             <li>Unlock New Game+, outfits, and other content</li>
                             <li>Supports Tomb Raider I-VI Remastered</li>
@@ -123,7 +124,7 @@
                             </li>
                             <li>
                                 Recreated game deserialization logic for Tomb Raider I-VI to
-                                locate dynamically positioned savegame data
+                                locate dynamically-positioned savegame data
                             </li>
                             <li>
                                 Dumped and mapped game entity tables to build lookup tables for
