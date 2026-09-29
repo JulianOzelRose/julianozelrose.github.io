@@ -709,8 +709,10 @@ a:hover {
 }
 
 .project-detail-category {
-    margin-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
     color: var(--nfo-muted);
+    border-bottom: 1px dashed var(--nfo-dim);
     font-size: 0.8rem;
     font-weight: normal;
     letter-spacing: 0.08em;
@@ -723,7 +725,7 @@ a:hover {
 }
 
 .project-detail-title {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 2.5rem;
     font-weight: bold;
     text-transform: uppercase;

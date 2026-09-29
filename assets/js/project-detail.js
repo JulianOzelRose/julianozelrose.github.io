@@ -82,13 +82,13 @@ function createProjectDetail(project) {
     return `
         <header class="project-detail-header">
 
-            <p class="project-detail-category">
-                ${detail.category}
-            </p>
-
             <h1 class="project-detail-title">
                 ${project.title}
             </h1>
+
+            <p class="project-detail-category">
+                ${detail.category}
+            </p>
 
             <p class="project-detail-intro">
                 ${detail.intro}
