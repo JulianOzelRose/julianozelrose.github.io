@@ -270,7 +270,11 @@ a:hover {
 
 .featured-projects {
     padding: 3rem 0 5rem;
+}
+
+.featured-projects-container {
     border-top: 1px dashed var(--nfo-dim);
+    padding-top: 3rem;
 }
 
 .featured-projects-title {
@@ -303,14 +307,6 @@ a:hover {
 
 .site-footer-container {
     width: 100%;
-}
-
-.site-footer small::before {
-    content: "< ";
-}
-
-.site-footer small::after {
-    content: " />";
 }
 
 
@@ -448,11 +444,6 @@ a:hover {
     font-size: 1rem;
     font-weight: bold;
     text-transform: uppercase;
-}
-
-.technology-group-title::before {
-    content: "> ";
-    color: var(--nfo-muted);
 }
 
 .technology-list {
@@ -692,11 +683,6 @@ a:hover {
     font-weight: normal;
 }
 
-.project-view-link::before {
-    content: "> ";
-    color: var(--nfo-muted);
-}
-
 
 /* ========================================
    Project Detail
@@ -731,11 +717,8 @@ a:hover {
 }
 
 .project-detail-category::before {
-    content: "[ RELEASE TYPE: ";
-}
-
-.project-detail-category::after {
-    content: " ]";
+    content: "[ RELEASE TYPE ]: ";
+    color: var(--nfo-white);
 }
 
 .project-detail-title {
