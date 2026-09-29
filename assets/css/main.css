@@ -108,7 +108,7 @@ a:hover {
 .site-navbar {
     width: 100%;
     padding: 0;
-    background: var(--nfo-black) !important;
+    background: var(--nfo-panel) !important;
     border-color: var(--nfo-border) !important;
 }
 
@@ -299,7 +299,7 @@ a:hover {
 
 .site-footer {
     padding: 1.25rem 0;
-    background: var(--nfo-black);
+    background: var(--nfo-panel);
     color: var(--nfo-muted);
     border-color: var(--nfo-border) !important;
     font-size: 0.8rem;
@@ -704,6 +704,7 @@ a:hover {
     max-width: 900px;
     margin-bottom: 4rem;
     padding: 1.5rem;
+    background: var(--nfo-panel);
     border: 1px solid var(--nfo-border);
 }
 
