@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadComponent('navbar', '/components/navbar.html');
     await loadComponent('footer', '/components/footer.html');
 
+    renderProjectMenu();
     setCurrentYear();
     setActiveNavigation();
 });
@@ -65,4 +66,25 @@ function setActiveNavigation() {
             link.setAttribute('aria-current', 'page');
         }
     });
+}
+
+function renderProjectMenu() {
+    const menu = document.getElementById('projects-dropdown-menu');
+
+    if (!menu) {
+        return;
+    }
+
+    const featuredProjects = projects.filter(project => project.featured);
+
+    menu.insertAdjacentHTML(
+        'beforeend',
+        featuredProjects.map(project => `
+            <li>
+                <a class="dropdown-item" href="${project.href}">
+                    ${project.title}
+                </a>
+            </li>
+        `).join('')
+    );
 }
