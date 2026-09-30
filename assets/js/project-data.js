@@ -204,7 +204,7 @@ const projects = [
             ],
 
             overview: [
-                'File Attribute Changer is a Windows desktop utility ' +
+                'A Windows desktop utility ' +
                 'for inspecting and modifying file properties through ' +
                 'a graphical interface. It provides access to file ' +
                 'timestamps, Windows file attributes, encryption, ' +
@@ -291,7 +291,7 @@ const projects = [
             ],
 
             overview: [
-                'HardWar Savegame Editor is a browser-based editor and world-state ' +
+                'A browser-based editor and world-state ' +
                 'parser for the 1998 cyberpunk PC game HardWar. Built through reverse ' +
                 'engineering of the game\'s dynamic savegame structures, it reconstructs ' +
                 'pilots, vehicles, hangars, factions, inventories, and the relationships ' +
@@ -372,7 +372,7 @@ const projects = [
             ],
 
             overview: [
-                'Memory Scanner is a Windows memory inspection and editing tool ' +
+                'A Windows memory inspection and editing tool ' +
                 'inspired by Cheat Engine. It attaches to running x86 or x64 ' +
                 'processes, searches their address space for values, and allows ' +
                 'matching addresses to be saved and modified.',
@@ -420,10 +420,10 @@ const projects = [
         }
     },
     {
-        title: 'Tomb Raider Savegame Manager',
+        title: 'Tomb Raider Remastered Savegame Manager',
         href: '/projects/tomb-raider-savegame-manager/',
         image: '/assets/images/tomb-raider-savegame-manager-thumbnail.png',
-        alt: 'Tomb Raider Savegame Manager',
+        alt: 'Tomb Raider Remastered Savegame Manager',
         description:
             'Savegame management and conversion tool for Tomb Raider I-VI ' +
             'Remastered, supporting multiple console and mobile formats.',
@@ -442,7 +442,7 @@ const projects = [
                 'Remastered, supporting save import, slot management, platform ' +
                 'conversion, and savegame creation.',
 
-            imageAlt: 'Tomb Raider Savegame Manager graphical interface',
+            imageAlt: 'Tomb Raider Remastered Savegame Manager graphical interface',
 
             imageCaption: 'Main graphical interface for savegame management and conversion',
 
@@ -460,7 +460,7 @@ const projects = [
             ],
 
             overview: [
-                'Tomb Raider Savegame Manager is an open-source utility for managing ' +
+                'An open-source utility for managing ' +
                 'savegames from Tomb Raider I-VI Remastered. It can import individual ' +
                 'saves, reorder or delete slots, create new saves, and transfer savegames ' +
                 'between supported game platforms.',
