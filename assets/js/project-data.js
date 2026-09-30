@@ -3,8 +3,8 @@
 const projects = [
     {
         title: 'Tomb Raider Remastered Savegame Editor',
-        href: '/projects/tomb-raider/',
-        image: '/assets/images/tomb-raider-thumbnail.png',
+        href: '/projects/tomb-raider-savegame-editor/',
+        image: '/assets/images/tomb-raider-savegame-editor-thumbnail.png',
         alt: 'Tomb Raider Remastered Savegame Editor',
         description:
             'A savegame editor for Tomb Raider I-VI Remastered, ' +
@@ -42,7 +42,7 @@ const projects = [
             ],
 
             overview: [
-                'TRR-SaveMaster is an open-source savegame editor for ' +
+                'An open-source savegame editor for ' +
                 'Tomb Raider I-VI Remastered, developed through reverse ' +
                 'engineering of the games\' binary save formats and ' +
                 'serialization logic.',
@@ -91,8 +91,8 @@ const projects = [
     },
     {
         title: 'TP-Link Router Hacking',
-        href: '/projects/tp-link-router/',
-        image: '/assets/images/tp-link-router-thumbnail.jpg',
+        href: '/projects/tp-link-router-hacking/',
+        image: '/assets/images/tp-link-router-hacking-thumbnail.jpg',
         alt: 'TP-Link TL-WR841N router hardware hacking',
         description:
             'Hardware and firmware exploration of a TP-Link ' +
@@ -252,8 +252,8 @@ const projects = [
     },
     {
         title: 'HardWar Savegame Editor',
-        href: '/projects/hardwar/',
-        image: '/assets/images/hardwar-thumbnail.png',
+        href: '/projects/hardwar-savegame-editor/',
+        image: '/assets/images/hardwar-savegame-editor-thumbnail.png',
         alt: 'HardWar Savegame Editor',
         description:
             'Browser-based savegame and world editor for the ' +
@@ -331,6 +331,176 @@ const projects = [
             technologies: [
                 'JavaScript',
                 'HTML',
+                'Binary Formats',
+                'Reverse Engineering'
+            ]
+        }
+    },
+    {
+        title: 'Memory Scanner',
+        href: '/projects/memory-scanner/',
+        image: '/assets/images/memory-scanner-thumbnail.png',
+        alt: 'Memory Scanner',
+        description:
+            'x86/x64 Windows memory scanner for searching, tracking, ' +
+            'and modifying values in running processes.',
+        technologies: [
+            'Visual C++',
+            'WinForms',
+            'Windows API',
+            'Reverse Engineering'
+        ],
+        featured: false,
+        detail: {
+            category: 'Reverse Engineering / Windows Development',
+
+            intro:
+                'An x86/x64 Windows memory scanner for searching, tracking, ' +
+                'and modifying values in running processes, built with Visual C++ ' +
+                'and the Windows API.',
+
+            imageAlt: 'Memory Scanner graphical interface',
+
+            imageCaption: 'Main graphical interface of the memory scanner',
+
+            actions: [
+                {
+                    label: 'View on GitHub',
+                    href: 'https://github.com/JulianOzelRose/Memory-Scanner',
+                    primary: false
+                }
+            ],
+
+            overview: [
+                'Memory Scanner is a Windows memory inspection and editing tool ' +
+                'inspired by Cheat Engine. It attaches to running x86 or x64 ' +
+                'processes, searches their address space for values, and allows ' +
+                'matching addresses to be saved and modified.',
+
+                'Saved addresses can be assigned descriptions, edited manually, ' +
+                'and interpreted using different data types, providing a compact ' +
+                'interface for inspecting and manipulating process memory.'
+            ],
+
+            features: [
+                'Attach to running x86 and x64 processes',
+                'Scan process memory for bytes, integers, and strings',
+                'Save matching memory addresses for continued inspection',
+                'Read and modify values at saved addresses',
+                'Change the data type, address, and description of saved entries',
+                'Separate builds for 32-bit and 64-bit target processes'
+            ],
+
+            technicalHighlights: [
+                'Implemented process attachment and memory access using native ' +
+                'Windows API functions including OpenProcess, ReadProcessMemory, ' +
+                'and WriteProcessMemory',
+
+                'Implemented memory reading and writing for byte, 16-bit integer, ' +
+                '32-bit integer, 64-bit integer, and string values',
+
+                'Handled module base addresses when resolving memory locations ' +
+                'within target executables',
+
+                'Built separate x86 and x64 versions for inspecting processes ' +
+                'across both Windows architectures',
+
+                'Integrated native Windows process and memory APIs with a managed ' +
+                'Visual C++ WinForms interface'
+            ],
+
+            technologies: [
+                'Visual C++',
+                '.NET Framework',
+                'WinForms',
+                'Windows API',
+                'Process Memory',
+                'Reverse Engineering'
+            ]
+        }
+    },
+    {
+        title: 'Tomb Raider Savegame Manager',
+        href: '/projects/tomb-raider-savegame-manager/',
+        image: '/assets/images/tomb-raider-savegame-manager-thumbnail.png',
+        alt: 'Tomb Raider Savegame Manager',
+        description:
+            'Savegame management and conversion tool for Tomb Raider I-VI ' +
+            'Remastered, supporting multiple console and mobile formats.',
+        technologies: [
+            'C#',
+            '.NET',
+            'Binary Formats',
+            'Reverse Engineering'
+        ],
+        featured: false,
+        detail: {
+            category: 'C# / Reverse Engineering',
+
+            intro:
+                'A savegame management and conversion tool for Tomb Raider I-VI ' +
+                'Remastered, supporting save import, slot management, platform ' +
+                'conversion, and savegame creation.',
+
+            imageAlt: 'Tomb Raider Savegame Manager graphical interface',
+
+            imageCaption: 'Main graphical interface for savegame management and conversion',
+
+            actions: [
+                {
+                    label: 'Download',
+                    href: 'https://github.com/JulianOzelRose/TombExtract/releases',
+                    primary: true
+                },
+                {
+                    label: 'View on GitHub',
+                    href: 'https://github.com/JulianOzelRose/TombExtract',
+                    primary: false
+                }
+            ],
+
+            overview: [
+                'Tomb Raider Savegame Manager is an open-source utility for managing ' +
+                'savegames from Tomb Raider I-VI Remastered. It can import individual ' +
+                'saves, reorder or delete slots, create new saves, and transfer savegames ' +
+                'between supported game platforms.',
+
+                'The application handles differences between platform and patch-specific ' +
+                'save formats automatically, allowing compatible savegame data to be ' +
+                'converted between PC, PlayStation 4, Nintendo Switch, Android, and iOS.'
+            ],
+
+            features: [
+                'Import savegames into existing save files',
+                'Delete and reorder individual save slots',
+                'Convert savegames between PC, PS4, Nintendo Switch, Android, and iOS',
+                'Automatically convert between patch formats',
+                'Create new savegames at the beginning of selected levels',
+                'Automatically detect required patch and platform conversions',
+                'Optionally back up save files before modification'
+            ],
+
+            technicalHighlights: [
+                'Reverse-engineered savegame containers and platform-specific binary ' +
+                'formats used across Tomb Raider I-VI Remastered',
+
+                'Implemented bidirectional conversion between PC, PS4, Nintendo Switch, ' +
+                'Android, and iOS savegame formats',
+
+                'Implemented automatic detection and conversion of incompatible ' +
+                'patch savegame structures',
+
+                'Built save-slot extraction, insertion, deletion, and reordering while ' +
+                'preserving the surrounding save container structure',
+
+                'Implemented generation of new level-start savegames with normalized ' +
+                'metadata for supported games'
+            ],
+
+            technologies: [
+                'C#',
+                '.NET',
+                'WinForms',
                 'Binary Formats',
                 'Reverse Engineering'
             ]
