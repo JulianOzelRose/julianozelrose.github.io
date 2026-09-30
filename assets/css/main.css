@@ -273,12 +273,13 @@ a:hover {
 }
 
 .featured-projects-container {
-    border-top: 1px dashed var(--nfo-dim);
     padding-top: 3rem;
 }
 
 .featured-projects-title {
-    margin-bottom: 0;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--nfo-dim);
     font-size: 1.6rem;
     font-weight: bold;
     text-transform: uppercase;
@@ -709,19 +710,13 @@ a:hover {
 }
 
 .project-detail-category {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
-    color: var(--nfo-muted);
+    color: var(--nfo-white);
     border-bottom: 1px dashed var(--nfo-dim);
     font-size: 0.8rem;
     font-weight: normal;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.project-detail-category::before {
-    content: "[ RELEASE TYPE ]: ";
-    color: var(--nfo-white);
 }
 
 .project-detail-title {
