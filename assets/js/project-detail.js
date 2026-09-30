@@ -104,10 +104,19 @@ function createProjectDetail(project) {
         <div class="project-detail-content">
 
             <div class="project-detail-image-container">
-                <img
-                    class="project-detail-image"
-                    src="${project.image}"
-                    alt="${detail.imageAlt}">
+                <figure class="project-detail-figure">
+                    <img
+                        class="project-detail-image"
+                        src="${project.image}"
+                        alt="${detail.imageAlt}">
+
+                    ${detail.imageCaption
+                        ? `<figcaption class="project-detail-image-caption">
+                            ${detail.imageCaption}
+                        </figcaption>`
+                        : ''
+                    }
+                </figure>
             </div>
 
             ${createTextSection(

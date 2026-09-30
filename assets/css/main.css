@@ -697,6 +697,17 @@ a:hover {
     padding: 3rem 0 5rem;
 }
 
+.project-detail-figure {
+    margin: 0;
+}
+
+.project-detail-image-caption {
+    margin-top: 0.5rem;
+    color: var(--nfo-muted);
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
 
 /* Header */
 

@@ -24,7 +24,9 @@ const projects = [
                 'built by reverse engineering binary save formats ' +
                 'across multiple games and platforms.',
 
-            imageAlt: 'Tomb Raider Remastered Savegame Editor interface',
+            imageAlt: '',
+
+            imageCaption: 'Graphical interface of the savegame editor',
 
             actions: [
                 {
@@ -110,7 +112,9 @@ const projects = [
                 'router, including UART root access, filesystem ' +
                 'extraction, and SPI flash dumping.',
 
-            imageAlt: 'TP-Link TL-WR841N router hardware hacking',
+            imageAlt: '',
+
+            imageCaption: 'Router exposed PCB with serial USB interface connected to UART',
 
             actions: [
                 {
@@ -182,7 +186,9 @@ const projects = [
                 'timestamps, file attributes, encryption, and NTFS ' +
                 'compression.',
 
-            imageAlt: 'File Attribute Changer interface',
+            imageAlt: '',
+
+            imageCaption: 'Graphical interface of File Attribute Changer',
 
             actions: [
                 {
@@ -267,7 +273,9 @@ const projects = [
                 'cyberpunk PC game HardWar, built with plain JavaScript ' +
                 'and HTML.',
 
-            imageAlt: 'HardWar Savegame Editor interface',
+            imageAlt: '',
+
+            imageCaption: 'Main graphical interface of the savegame editor',
 
             actions: [
                 {
