@@ -706,6 +706,7 @@ a:hover {
     color: var(--nfo-muted);
     font-size: 0.75rem;
     line-height: 1.4;
+    text-align: center;
 }
 
 
@@ -777,7 +778,6 @@ a:hover {
     max-height: 520px;
     padding: 4px;
     background: var(--nfo-black);
-    border: 1px solid var(--nfo-border);
 }
 
 
