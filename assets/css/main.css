@@ -1320,6 +1320,64 @@ a:hover {
 }
 
 /* =========================================================
+   Writeup Tables
+   ========================================================= */
+
+.writeup-table-wrapper {
+    width: fit-content;
+    max-width: 100%;
+    margin: 2rem auto;
+    overflow-x: auto;
+    border: 1px solid var(--nfo-border);
+    background: var(--nfo-panel);
+}
+
+.writeup-table {
+    width: auto;
+    min-width: 650px;
+    margin: 0;
+    border-collapse: collapse;
+    color: var(--nfo-white);
+    font-size: 0.85rem;
+}
+
+.writeup-table th,
+.writeup-table td {
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.writeup-table thead {
+    border-bottom: 1px solid var(--nfo-border);
+}
+
+.writeup-table tbody tr {
+    border-bottom: 1px dashed var(--nfo-dim);
+}
+
+.writeup-table tbody tr:last-child {
+    border-bottom: 0;
+}
+
+.writeup-table th {
+    color: var(--nfo-white);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.writeup-table td {
+    color: var(--nfo-muted);
+}
+
+.writeup-table-code {
+    color: var(--nfo-white);
+    white-space: nowrap;
+}
+
+/* =========================================================
    Project Binaries Modal
    ========================================================= */
 
