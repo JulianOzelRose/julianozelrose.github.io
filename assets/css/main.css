@@ -112,10 +112,6 @@ a:hover {
     border-color: var(--nfo-border) !important;
 }
 
-/*
- * The container has a stable 58px minimum height.
- * On mobile it can still grow when navbar-collapse opens.
- */
 .site-navbar-container {
     width: 100%;
     min-height: 58px;
@@ -161,13 +157,6 @@ a:hover {
     color: var(--nfo-white);
 }
 
-/*
- * Absolute positioning prevents the active marker from changing
- * the dimensions of the nav link or navbar.
- *
- * The padding is unchanged, so it doesn't create the "fused"
- * appearance from before.
- */
 .navbar-nav .nav-link.active {
     position: relative;
 }
@@ -834,6 +823,739 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+}
+
+/* =========================================================
+   Writeups
+   ========================================================= */
+
+.writeups-section {
+    padding: 3rem 0 5rem;
+}
+
+.writeups-container {
+    max-width: 900px;
+}
+
+.writeups-header {
+    margin-bottom: 3rem;
+}
+
+.writeups-title {
+    margin-bottom: 0.5rem;
+    color: var(--nfo-white);
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.writeups-intro {
+    max-width: 700px;
+    margin-bottom: 0;
+    color: var(--nfo-muted);
+}
+
+
+/* Directory */
+
+.writeups-directory-separator {
+    margin-bottom: 0;
+    border-top: 1px dashed var(--nfo-dim);
+}
+
+/* Entry */
+
+.writeup-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 1.25rem;
+    align-items: start;
+    padding: 1.5rem 0;
+    border-bottom: 1px dashed var(--nfo-dim);
+}
+
+.writeup-date {
+    padding-top: 0.15rem;
+    color: var(--nfo-dim);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.writeup-entry-title {
+    margin-bottom: 0.35rem;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.writeup-entry-title a {
+    position: relative;
+    z-index: 1;
+    color: var(--nfo-white);
+    text-decoration: none;
+}
+
+.writeup-entry-title a::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: "";
+}
+
+.writeup-category {
+    margin-bottom: 0.6rem;
+    color: var(--nfo-muted);
+    font-size: 0.8rem;
+}
+
+.writeup-description {
+    max-width: 620px;
+    margin-bottom: 0;
+    color: var(--nfo-muted);
+    font-size: 0.9rem;
+}
+
+.writeup-entry-arrow {
+    padding-top: 0.1rem;
+    color: var(--nfo-muted);
+    font-size: 1rem;
+}
+
+.writeup-entry:hover .writeup-entry-title a,
+.writeup-entry:hover .writeup-entry-arrow {
+    color: #ffffff;
+}
+
+/* =========================================================
+   Writeup Detail
+   ========================================================= */
+
+.writeup-detail-page {
+    padding: 3rem 0 5rem;
+}
+
+.writeup-detail-container {
+    max-width: 900px;
+}
+
+
+/* =========================================================
+   Writeup Header
+   ========================================================= */
+
+.writeup-detail-header {
+    margin-bottom: 4rem;
+    padding: 1.5rem;
+    background: var(--nfo-panel);
+    border: 1px solid var(--nfo-border);
+}
+
+.writeup-detail-title {
+    margin-bottom: 0.5rem;
+    color: var(--nfo-white);
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.writeup-detail-category {
+    margin-bottom: 1.25rem;
+    color: var(--nfo-muted);
+    font-size: 0.9rem;
+}
+
+.writeup-detail-intro {
+    margin-bottom: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--nfo-dim);
+    color: var(--nfo-white);
+}
+
+.writeup-detail-meta {
+    color: var(--nfo-dim);
+    font-size: 0.8rem;
+}
+
+
+/* =========================================================
+   Writeup Content
+   ========================================================= */
+
+.writeup-detail-content {
+    width: 100%;
+}
+
+.writeup-detail-block {
+    margin-bottom: 3.5rem;
+}
+
+.writeup-detail-block:last-child {
+    margin-bottom: 0;
+}
+
+.writeup-detail-heading {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--nfo-dim);
+    color: var(--nfo-white);
+    font-size: 1.35rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.writeup-detail-heading::before {
+    content: "[ ";
+    color: var(--nfo-muted);
+}
+
+.writeup-detail-heading::after {
+    content: " ]";
+    color: var(--nfo-muted);
+}
+
+.writeup-detail-subheading {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--nfo-white);
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.writeup-detail-block p {
+    margin-bottom: 1.25rem;
+    color: var(--nfo-white);
+    line-height: 1.7;
+}
+
+.writeup-detail-block p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   Writeup Lists
+   ========================================================= */
+
+.writeup-detail-list {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    color: var(--nfo-white);
+    line-height: 1.8;
+}
+
+.writeup-detail-list li::marker {
+    content: "> ";
+    color: var(--nfo-muted);
+}
+
+
+/* =========================================================
+   Writeup Figures
+   ========================================================= */
+
+.writeup-figure {
+    margin: 2.5rem 0;
+    text-align: center;
+}
+
+.writeup-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.writeup-image-caption {
+    margin-top: 0.65rem;
+    color: var(--nfo-dim);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+
+/* =========================================================
+   Inline Code
+   ========================================================= */
+
+.writeup-detail-content p code,
+.writeup-detail-content li code {
+    padding: 0.1rem 0.3rem;
+    background: var(--nfo-panel);
+    color: var(--nfo-white);
+    border: 1px solid var(--nfo-dim);
+    font-family: inherit;
+    font-size: 0.9em;
+}
+
+
+/* =========================================================
+   Code Blocks
+   ========================================================= */
+
+.code-block {
+    margin: 2rem 0;
+}
+
+.code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.code-block-language {
+    color: var(--nfo-muted);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.code-block-language::before {
+    content: "[ ";
+    color: var(--nfo-dim);
+}
+
+.code-block-language::after {
+    content: " ]";
+    color: var(--nfo-dim);
+}
+
+.code-block-copy {
+    min-width: 4.5rem;
+    padding: 0.15rem 0.45rem;
+    background: transparent;
+    color: var(--nfo-muted);
+    border: 1px solid var(--nfo-dim);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.code-block-copy:hover,
+.code-block-copy:focus {
+    background: var(--nfo-white);
+    color: var(--nfo-black);
+    border-color: var(--nfo-white);
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 1.25rem;
+    overflow-x: auto;
+    background: var(--nfo-panel);
+    color: var(--nfo-white);
+    border: 1px solid var(--nfo-border);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    tab-size: 4;
+}
+
+.code-block code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    border: 0;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+
+/* =========================================================
+   Writeup Actions
+   ========================================================= */
+
+.writeup-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+/* =========================================================
+   Writeup Video
+   ========================================================= */
+
+.writeup-video-figure {
+    margin: 2.5rem 0;
+    text-align: center;
+}
+
+.writeup-video {
+    display: block;
+    width: auto;
+    max-width: min(100%, 650px);
+    height: auto;
+    margin: 0 auto;
+    background: var(--nfo-black);
+}
+
+/* =========================================================
+   Writeup Sources
+   ========================================================= */
+
+.writeup-source-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+}
+
+.writeup-source-list li {
+    color: var(--nfo-muted);
+}
+
+.writeup-source-list li::marker {
+    content: "> ";
+    color: var(--nfo-dim);
+}
+
+.writeup-source-list a {
+    color: var(--nfo-muted);
+    text-decoration: underline;
+    text-decoration-color: var(--nfo-dim);
+    text-underline-offset: 0.2em;
+}
+
+.writeup-source-list a:hover,
+.writeup-source-list a:focus {
+    color: var(--nfo-white);
+    text-decoration-color: var(--nfo-white);
+}
+
+/* =========================================================
+   Hex Blocks
+   ========================================================= */
+
+.hex-block {
+    margin: 2rem 0;
+}
+
+.hex-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.hex-block-type {
+    color: var(--nfo-muted);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.hex-block-type::before {
+    content: "[ ";
+    color: var(--nfo-dim);
+}
+
+.hex-block-type::after {
+    content: " ]";
+    color: var(--nfo-dim);
+}
+
+.hex-block-copy {
+    min-width: 4.5rem;
+    padding: 0.15rem 0.45rem;
+    background: transparent;
+    color: var(--nfo-muted);
+    border: 1px solid var(--nfo-dim);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.hex-block-copy:hover,
+.hex-block-copy:focus {
+    background: var(--nfo-white);
+    color: var(--nfo-black);
+    border-color: var(--nfo-white);
+}
+
+.hex-view {
+    margin: 0;
+    padding: 1.25rem;
+    overflow-x: auto;
+    background: var(--nfo-panel);
+    color: var(--nfo-white);
+    border: 1px solid var(--nfo-border);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+.hex-view-header {
+    color: var(--nfo-muted);
+}
+
+.hex-offset {
+    color: var(--nfo-dim);
+}
+
+.hex-bytes {
+    color: var(--nfo-white);
+}
+
+.hex-ascii {
+    color: var(--nfo-muted);
+}
+
+@media (max-width: 767.98px) {
+
+    .hex-view {
+        padding: 1rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* =========================================================
+   Project Binaries Modal
+   ========================================================= */
+
+.project-binaries-dialog {
+    max-width: 600px;
+}
+
+.project-binaries-modal {
+    background: var(--nfo-panel);
+    color: var(--nfo-white);
+    border: 1px solid var(--nfo-border);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+
+/* Header */
+
+.project-binaries-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    background: var(--nfo-panel);
+    border-bottom: 1px solid var(--nfo-border);
+}
+
+.project-binaries-title {
+    margin: 0;
+    color: var(--nfo-white);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.project-binaries-close {
+    padding: 0.1rem 0.4rem;
+    background: transparent;
+    color: var(--nfo-muted);
+    border: 0;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.project-binaries-close:hover,
+.project-binaries-close:focus {
+    background: var(--nfo-white);
+    color: var(--nfo-black);
+}
+
+
+/* Body */
+
+.project-binaries-body {
+    padding: 1.25rem;
+    background: var(--nfo-black);
+}
+
+.project-binaries-intro {
+    margin-bottom: 1.25rem;
+    color: var(--nfo-muted);
+    font-size: 0.85rem;
+}
+
+
+/* Binary Rows */
+
+.binary-download-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.25rem 0;
+    border-top: 1px dashed var(--nfo-dim);
+}
+
+.binary-download-item:last-child {
+    padding-bottom: 0;
+}
+
+.binary-download-info {
+    min-width: 0;
+}
+
+.binary-download-name {
+    margin-bottom: 0.2rem;
+    color: var(--nfo-white);
+    font-size: 0.95rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.binary-download-meta {
+    margin-bottom: 0.4rem;
+    color: var(--nfo-dim);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.binary-download-description {
+    color: var(--nfo-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+
+/* Download Controls */
+
+.binary-download-button,
+.project-binaries-footer-close {
+    flex-shrink: 0;
+    padding: 0.35rem 0.65rem;
+    background: transparent;
+    color: var(--nfo-white);
+    border: 1px solid var(--nfo-border);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.75rem;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.binary-download-button:hover,
+.binary-download-button:focus,
+.project-binaries-footer-close:hover,
+.project-binaries-footer-close:focus {
+    background: var(--nfo-white);
+    color: var(--nfo-black);
+    border-color: var(--nfo-white);
+}
+
+
+/* Footer */
+
+.project-binaries-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.8rem 1rem;
+    background: var(--nfo-panel);
+    border-top: 1px solid var(--nfo-border);
+}
+
+
+/* Bootstrap Backdrop */
+
+.modal-backdrop.show {
+    opacity: 0.8;
+}
+
+
+/* Mobile */
+
+@media (max-width: 575.98px) {
+
+    .project-binaries-dialog {
+        margin: 1rem;
+    }
+
+    .binary-download-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .binary-download-button {
+        align-self: flex-start;
+    }
+}
+
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .writeup-detail-page {
+        padding: 2.5rem 0 4rem;
+    }
+
+    .writeup-detail-header {
+        margin-bottom: 3rem;
+        padding: 1.25rem;
+    }
+
+    .writeup-detail-title {
+        font-size: 1.6rem;
+    }
+
+    .writeup-detail-block {
+        margin-bottom: 3rem;
+    }
+
+    .writeup-figure {
+        margin: 2rem 0;
+    }
+
+    .code-block pre {
+        padding: 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 767.98px) {
+
+    .writeups-section {
+        padding: 2.5rem 0 4rem;
+    }
+
+    .writeups-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .writeup-entry {
+        grid-template-columns: 1fr auto;
+        gap: 0.5rem 1rem;
+        padding: 1.25rem 0;
+    }
+
+    .writeup-date {
+        grid-column: 1 / -1;
+        padding-top: 0;
+    }
+
+    .writeup-entry-content {
+        grid-column: 1;
+    }
+
+    .writeup-entry-arrow {
+        grid-column: 2;
+        grid-row: 2;
+    }
 }
 
 

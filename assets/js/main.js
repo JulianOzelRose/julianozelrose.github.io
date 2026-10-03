@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderProjectMenu();
     setCurrentYear();
     setActiveNavigation();
+    initializeCopyBlocks();
 });
 
 async function loadComponent(id, path) {
@@ -87,4 +88,35 @@ function renderProjectMenu() {
             </li>
         `).join('')
     );
+}
+
+function initializeCopyBlocks() {
+    document.querySelectorAll('.code-block-copy, .hex-block-copy').forEach(button => {
+        button.addEventListener('click', async () => {
+            const block = button.closest('.code-block, .hex-block');
+
+            const content = block?.querySelector(
+                'pre code, .hex-view'
+            );
+
+            if (!content) {
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(content.textContent);
+
+                const originalText = button.textContent;
+
+                button.textContent = 'COPIED';
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 1500);
+            }
+            catch (error) {
+                console.error('Failed to copy content:', error);
+            }
+        });
+    });
 }
