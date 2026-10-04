@@ -1317,16 +1317,15 @@ a:hover {
    ========================================================= */
 
 .writeup-table-wrapper {
-    width: fit-content;
-    max-width: 100%;
-    margin: 2rem auto;
+    width: 100%;
+    margin: 2rem 0;
     overflow-x: auto;
     border: 1px solid var(--nfo-border);
     background: var(--nfo-panel);
 }
 
 .writeup-table {
-    width: auto;
+    width: 100%;
     min-width: 650px;
     margin: 0;
     border-collapse: collapse;
