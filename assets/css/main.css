@@ -1521,6 +1521,38 @@ a:hover {
 }
 
 
+/* =========================
+   404
+========================= */
+
+.error-page {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 64px 0;
+}
+
+.error-skull {
+    display: block;
+    width: 128px;
+    height: auto;
+    margin: 0 auto 28px;
+}
+
+.error-code {
+    margin-bottom: 12px;
+    font-size: 1.5rem;
+    font-weight: normal;
+    letter-spacing: 0.04em;
+}
+
+.error-message {
+    margin-bottom: 28px;
+    color: var(--nfo-muted);
+}
+
+
 /* ========================================
    Mobile
    ======================================== */
