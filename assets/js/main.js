@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderProjectMenu();
     setCurrentYear();
     setActiveNavigation();
+    highlightCodeBlocks();
     initializeCopyBlocks();
 });
 
@@ -119,4 +120,220 @@ function initializeCopyBlocks() {
             }
         });
     });
+}
+
+function highlightCodeBlocks() {
+    document.querySelectorAll('.code-block').forEach(block => {
+        const language = block.querySelector('.code-block-language')?.textContent.trim().toLowerCase();
+        const code = block.querySelector('pre code');
+
+        if (!code) {
+            return;
+        }
+
+        switch (language) {
+            case 'c':
+            case 'c++':
+            case 'c#':
+                code.innerHTML = highlightCStyleComments(code.textContent);
+                break;
+
+            case 'asm':
+                code.innerHTML = highlightLineComments(code.textContent, ';');
+                break;
+
+            case 'python':
+                code.innerHTML = highlightPython(code.textContent);
+                break;
+
+            case 'shell':
+            case 'bash':
+                code.innerHTML = highlightShell(code.textContent);
+                break;
+        }
+    });
+}
+
+function highlightCStyleComments(source) {
+    let output = '';
+    let i = 0;
+
+    while (i < source.length) {
+        // String literal
+        if (source[i] === '"') {
+            const start = i++;
+
+            while (i < source.length) {
+                if (source[i] === '\\') {
+                    i += 2;
+                    continue;
+                }
+
+                if (source[i++] === '"') {
+                    break;
+                }
+            }
+
+            output += escapeHtml(source.slice(start, i));
+            continue;
+        }
+
+        // Character literal
+        if (source[i] === "'") {
+            const start = i++;
+
+            while (i < source.length) {
+                if (source[i] === '\\') {
+                    i += 2;
+                    continue;
+                }
+
+                if (source[i++] === "'") {
+                    break;
+                }
+            }
+
+            output += escapeHtml(source.slice(start, i));
+            continue;
+        }
+
+        // Single-line comment
+        if (source.startsWith('//', i)) {
+            const end = source.indexOf('\n', i);
+            const stop = end === -1 ? source.length : end;
+
+            output += span('comment', source.slice(i, stop));
+            i = stop;
+            continue;
+        }
+
+        // Multi-line comment
+        if (source.startsWith('/*', i)) {
+            const end = source.indexOf('*/', i + 2);
+            const stop = end === -1 ? source.length : end + 2;
+
+            output += span('comment', source.slice(i, stop));
+            i = stop;
+            continue;
+        }
+
+        output += escapeHtml(source[i]);
+        i++;
+    }
+
+    return output;
+}
+
+function highlightPython(source) {
+    return source
+        .split('\n')
+        .map(line => {
+            let quote = null;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+
+                if (char === '\\') {
+                    i++;
+                    continue;
+                }
+
+                if (char === '"' || char === "'") {
+                    if (quote === char) {
+                        quote = null;
+                    } else if (!quote) {
+                        quote = char;
+                    }
+
+                    continue;
+                }
+
+                if (char === '#' && !quote) {
+                    return (
+                        escapeHtml(line.slice(0, i)) +
+                        span('comment', line.slice(i))
+                    );
+                }
+            }
+
+            return escapeHtml(line);
+        })
+        .join('\n');
+}
+
+function highlightLineComments(source, marker) {
+    return source
+        .split('\n')
+        .map(line => {
+            const index = line.indexOf(marker);
+
+            if (index === -1) {
+                return escapeHtml(line);
+            }
+
+            const code = line.slice(0, index);
+            const comment = line.slice(index);
+
+            return escapeHtml(code) + span('comment', comment);
+        })
+        .join('\n');
+}
+
+function highlightShell(source) {
+    return source
+        .split('\n')
+        .map(line => {
+            if (/^\s*~\s+#\s+/.test(line)) {
+                return escapeHtml(line);
+            }
+
+            const index = findShellComment(line);
+
+            if (index === -1) {
+                return escapeHtml(line);
+            }
+
+            return (
+                escapeHtml(line.slice(0, index)) +
+                span('comment', line.slice(index))
+            );
+        })
+        .join('\n');
+}
+
+function findShellComment(line) {
+    let quote = null;
+
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '\\') {
+            i++;
+            continue;
+        }
+
+        if (char === '"' || char === "'") {
+            if (quote === char) {
+                quote = null;
+            } else if (!quote) {
+                quote = char;
+            }
+
+            continue;
+        }
+
+        if (char === '#' && !quote) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+function span(type, value) {
+    return `<span class="syntax-${type}">${escapeHtml(value)}</span>`;
+}
+
+function escapeHtml(value) {
+    return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
