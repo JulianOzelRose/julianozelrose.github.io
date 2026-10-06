@@ -704,7 +704,7 @@ a:hover {
 .project-detail-header {
     width: 100%;
     max-width: 900px;
-    margin-bottom: 4rem;
+    margin: 0 auto 4rem;
     padding: 1.5rem;
     background: var(--nfo-panel);
     border: 1px solid var(--nfo-border);
@@ -747,6 +747,7 @@ a:hover {
 .project-detail-content {
     width: 100%;
     max-width: 900px;
+    margin: 0 auto;
 }
 
 
