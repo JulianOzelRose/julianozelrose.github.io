@@ -151,8 +151,7 @@
                             </div>
                         </div>
 
-                        <pre><code>
-uint __cdecl Unpack(void *param_1,uint param_2,void *param_3)
+                        <pre><code>uint __cdecl Unpack(void *param_1,uint param_2,void *param_3)
 {
   undefined1 uVar1;
   longlong lVar2;
@@ -226,8 +225,7 @@ uint __cdecl Unpack(void *param_1,uint param_2,void *param_3)
     return (int)puVar10 - (int)param_3;
   }
   return 0;
-}
-</code></pre>
+}</code></pre>
 
                     </div>
 
@@ -392,8 +390,7 @@ uint __cdecl Unpack(void *param_1,uint param_2,void *param_3)
                             </div>
                         </div>
 
-                        <pre><code>
-uint __cdecl Pack(uchar *param_1,uint param_2,uchar *param_3,uchar *param_4)
+                        <pre><code>uint __cdecl Pack(uchar *param_1,uint param_2,uchar *param_3,uchar *param_4)
 {
   int iVar1;
   uchar *puVar2;
@@ -536,7 +533,8 @@ LAB_000bd7b2:
       } while (uVar5 &lt; uVar11);
     } while ((uVar5 &amp; 0x18) != 0);
   } while( true );
-}</code></pre>
+}
+</code></pre>
 
                     </div>
 
@@ -672,8 +670,7 @@ LAB_000bd7b2:
                                 <button class="code-block-copy" type="button">COPY</button>
                             </div>
                         </div>
-                        <pre><code>
-dictionary[hash_index] = (combined_code &lt;&lt; 12) | next_code
+                        <pre><code>dictionary[hash_index] = (combined_code &lt;&lt; 12) | next_code
 next_code += 1
 
 if next_code &gt; max_code and code_width &lt; MAX_BITS:
@@ -701,8 +698,7 @@ if next_code &gt; max_code and code_width &lt; MAX_BITS:
                                 </button>
                             </div>
                         </div>
-                        <pre><code>
-if next_code &gt; max_code and code_width &lt; MAX_BITS:
+                        <pre><code>if next_code &gt; max_code and code_width &lt; MAX_BITS:
     code_width += 1
     max_code = (1 &lt;&lt; code_width) - 1
 
@@ -757,8 +753,7 @@ next_code += 1
                                 <button class="code-block-copy" type="button">COPY</button>
                             </div>
                         </div>
-                        <pre><code>
-DATASET: 04_ParisianGhetto_Part1.BIN
+                        <pre><code>DATASET: 04_ParisianGhetto_Part1.BIN
 Compressed Size: 0x24C4, Decompressed Size: 0x105DE
 =========================================================================
 [ERROR] Mismatch detected at 0x941 of compressed buffer
@@ -832,8 +827,7 @@ Compressed Size: 0x24C4, Decompressed Size: 0x105DE
                                 <button class="code-block-copy" type="button">COPY</button>
                             </div>
                         </div>
-                        <pre><code>
-; Build the dictionary key and calculate its initial hash index
+                        <pre><code>; Build the dictionary key and calculate its initial hash index
 
 000bd6e8  MOVZX   R9D, byte ptr [RCX]     ; nextChar
 000bd6ec  MOV     EAX, R10D               ; currentCode
@@ -918,8 +912,7 @@ Compressed Size: 0x24C4, Decompressed Size: 0x105DE
             <button class="code-block-copy" type="button">COPY</button>
         </div>
     </div>
-<pre><code>
-; Read the next LZW code from the packed bitstream
+<pre><code>; Read the next LZW code from the packed bitstream
 ; The original routine performs 32-bit reads without checking
 ; whether all four bytes remain inside the logical compressed buffer
 
@@ -979,8 +972,7 @@ Compressed Size: 0x24C4, Decompressed Size: 0x105DE
             <button class="code-block-copy" type="button">COPY</button>
         </div>
     </div>
-<pre><code>
-if (dictionary[hashIndex] != 0)
+<pre><code>if (dictionary[hashIndex] != 0)
 {
     // Initial hash-slot comparison uses signed correction
     int entry = unchecked((int)dictionary[hashIndex]);

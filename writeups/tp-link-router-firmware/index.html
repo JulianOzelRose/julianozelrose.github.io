@@ -239,8 +239,7 @@
                             </div>
                         </div>
 
-                        <pre><code>
-~ # mount
+                        <pre><code>~ # mount
 rootfs on / type rootfs (rw)
 /dev/root on / type squashfs (ro,relatime)
 proc on /proc type proc (rw,relatime)
@@ -276,8 +275,7 @@ ramfs on /var type ramfs (rw,relatime)
                             </div>
                         </div>
 
-                        <pre><code>
-# Download BusyBox
+                        <pre><code># Download BusyBox
 cd var/tmp
 tftp -g -r busybox-mipsel 192.168.0.100
 chmod u+x busybox-mipsel
@@ -437,8 +435,7 @@ tftp -p -r linuxrc.tar -l linuxrc.tar 192.168.0.100
                             </div>
                         </div>
 
-                        <pre><code>
-# Compile C binary
+                        <pre><code># Compile C binary
 mipsel-buildroot-linux-uclibc-gcc -mabi=32 -mfp32 -EL -static -o program program.c
 
 # Compile C++ binary
