@@ -82,9 +82,15 @@
                                 HEX
                             </span>
 
-                            <button class="hex-block-copy" type="button">
-                                COPY
-                            </button>
+                            <div class="block-controls">
+                                <button class="hex-block-toggle" type="button">
+                                    HIDE
+                                </button>
+
+                                <button class="hex-block-copy" type="button">
+                                    COPY
+                                </button>
+                            </div>
                         </div>
 
                         <pre
@@ -134,9 +140,15 @@
                                 C
                             </span>
 
-                            <button class="code-block-copy" type="button">
-                                COPY
-                            </button>
+                            <div class="block-controls">
+                                <button class="code-block-toggle" type="button">
+                                    HIDE
+                                </button>
+
+                                <button class="code-block-copy" type="button">
+                                    COPY
+                                </button>
+                            </div>
                         </div>
 
                         <pre><code>
@@ -373,7 +385,11 @@ uint __cdecl Unpack(void *param_1,uint param_2,void *param_3)
 
                         <div class="code-block-header">
                             <span class="code-block-language">C</span>
-                            <button class="code-block-copy" type="button">COPY</button>
+
+                            <div class="block-controls">
+                                <button class="code-block-toggle" type="button">HIDE</button>
+                                <button class="code-block-copy" type="button">COPY</button>
+                            </div>
                         </div>
 
                         <pre><code>
@@ -650,7 +666,11 @@ LAB_000bd7b2:
                     <div class="code-block">
                         <div class="code-block-header">
                             <span class="code-block-language">PYTHON</span>
-                            <button class="code-block-copy" type="button">COPY</button>
+
+                            <div class="block-controls">
+                                <button class="code-block-toggle" type="button">HIDE</button>
+                                <button class="code-block-copy" type="button">COPY</button>
+                            </div>
                         </div>
                         <pre><code>
 dictionary[hash_index] = (combined_code &lt;&lt; 12) | next_code
@@ -670,7 +690,16 @@ if next_code &gt; max_code and code_width &lt; MAX_BITS:
                     <div class="code-block">
                         <div class="code-block-header">
                             <span class="code-block-language">PYTHON</span>
-                            <button class="code-block-copy" type="button">COPY</button>
+
+                            <div class="block-controls">
+                                <button class="code-block-toggle" type="button">
+                                    HIDE
+                                </button>
+
+                                <button class="code-block-copy" type="button">
+                                    COPY
+                                </button>
+                            </div>
                         </div>
                         <pre><code>
 if next_code &gt; max_code and code_width &lt; MAX_BITS:
@@ -722,7 +751,11 @@ next_code += 1
                     <div class="code-block">
                         <div class="code-block-header">
                             <span class="code-block-language">OUTPUT</span>
-                            <button class="code-block-copy" type="button">COPY</button>
+
+                            <div class="block-controls">
+                                <button class="code-block-toggle" type="button">HIDE</button>
+                                <button class="code-block-copy" type="button">COPY</button>
+                            </div>
                         </div>
                         <pre><code>
 DATASET: 04_ParisianGhetto_Part1.BIN
@@ -793,7 +826,11 @@ Compressed Size: 0x24C4, Decompressed Size: 0x105DE
                     <div class="code-block">
                         <div class="code-block-header">
                             <span class="code-block-language">ASM</span>
-                            <button class="code-block-copy" type="button">COPY</button>
+
+                            <div class="block-controls">
+                                <button class="code-block-toggle" type="button">HIDE</button>
+                                <button class="code-block-copy" type="button">COPY</button>
+                            </div>
                         </div>
                         <pre><code>
 ; Build the dictionary key and calculate its initial hash index
@@ -875,7 +912,11 @@ Compressed Size: 0x24C4, Decompressed Size: 0x105DE
 <div class="code-block">
     <div class="code-block-header">
         <span class="code-block-language">ASM</span>
-        <button class="code-block-copy" type="button">COPY</button>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">HIDE</button>
+            <button class="code-block-copy" type="button">COPY</button>
+        </div>
     </div>
 <pre><code>
 ; Read the next LZW code from the packed bitstream
@@ -932,7 +973,11 @@ Compressed Size: 0x24C4, Decompressed Size: 0x105DE
 <div class="code-block">
     <div class="code-block-header">
         <span class="code-block-language">C#</span>
-        <button class="code-block-copy" type="button">COPY</button>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">HIDE</button>
+            <button class="code-block-copy" type="button">COPY</button>
+        </div>
     </div>
 <pre><code>
 if (dictionary[hashIndex] != 0)

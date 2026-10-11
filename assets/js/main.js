@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setActiveNavigation();
     highlightCodeBlocks();
     initializeCopyBlocks();
+    initializeToggleBlocks();
 });
 
 async function loadComponent(id, path) {
@@ -139,6 +140,23 @@ function initializeCopyBlocks() {
             catch (error) {
                 console.error('Failed to copy content:', error);
             }
+        });
+    });
+}
+
+function initializeToggleBlocks() {
+    document.querySelectorAll('.code-block-toggle, .hex-block-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const block = button.closest('.code-block, .hex-block');
+
+            if (!block) {
+                return;
+            }
+
+            const collapsed = block.classList.toggle('collapsed');
+
+            button.textContent = collapsed ? 'SHOW' : 'HIDE';
+            button.setAttribute('aria-expanded', String(!collapsed));
         });
     });
 }

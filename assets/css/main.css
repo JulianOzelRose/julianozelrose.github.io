@@ -1123,7 +1123,8 @@ a:hover {
     color: var(--nfo-dim);
 }
 
-.code-block-copy {
+.code-block-copy,
+.code-block-toggle {
     min-width: 4.5rem;
     padding: 0.15rem 0.45rem;
     background: transparent;
@@ -1138,7 +1139,9 @@ a:hover {
 }
 
 .code-block-copy:hover,
-.code-block-copy:focus {
+.code-block-copy:focus,
+.code-block-toggle:hover,
+.code-block-toggle:focus {
     background: var(--nfo-white);
     color: var(--nfo-black);
     border-color: var(--nfo-white);
@@ -1270,7 +1273,8 @@ a:hover {
     color: var(--nfo-dim);
 }
 
-.hex-block-copy {
+.hex-block-copy,
+.hex-block-toggle {
     min-width: 4.5rem;
     padding: 0.15rem 0.45rem;
     background: transparent;
@@ -1285,7 +1289,9 @@ a:hover {
 }
 
 .hex-block-copy:hover,
-.hex-block-copy:focus {
+.hex-block-copy:focus,
+.hex-block-toggle:hover,
+.hex-block-toggle:focus {
     background: var(--nfo-white);
     color: var(--nfo-black);
     border-color: var(--nfo-white);
@@ -1319,6 +1325,19 @@ a:hover {
 
 .hex-ascii {
     color: var(--nfo-muted);
+}
+
+
+/* =========================================================
+   Collapsible Blocks
+   ========================================================= */
+
+.code-block.collapsed pre,
+.hex-block.collapsed .hex-view {
+    height: 42px;
+    padding: 0;
+    font-size: 0;
+    overflow: hidden;
 }
 
 
