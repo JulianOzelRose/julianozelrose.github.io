@@ -1075,6 +1075,17 @@ a:hover {
     text-align: center;
 }
 
+.writeup-detail-content .code-block-caption {
+    margin-top: 0.65rem;
+    color: var(--nfo-dim);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.writeup-detail-content .code-block-caption a {
+    color: inherit;
+}
+
 
 /* =========================================================
    Inline Code

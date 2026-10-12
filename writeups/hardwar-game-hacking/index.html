@@ -1,0 +1,466 @@
+<!-- /writeups/hardwar-game-hacking/index.html -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Understanding Pointers Through Game Hacking | Julian Ozel Rose</title>
+
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+
+    <div id="navbar"></div>
+
+    <main class="writeup-detail-page">
+        <div class="writeup-detail-container container">
+
+            <!-- ================= HEADER ================= -->
+
+            <header class="writeup-detail-header">
+                <h1 class="writeup-detail-title">Understanding Pointers Through Game Hacking</h1>
+
+                <p class="writeup-detail-category">Game Hacking / Reverse Engineering</p>
+
+                <p class="writeup-detail-intro">
+                    Exploring pointers and memory addresses through game hacking,
+                    using a custom trainer written for the cyberpunk PC game
+                    HardWar as a practical example.
+                </p>
+
+                <div class="writeup-detail-meta">10-12-2026</div>
+            </header>
+
+            <article class="writeup-detail-content">
+
+                <!-- ================= INTRODUCTION ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Introduction</h2>
+
+                    <p>
+                        When I took my first computer science courses at university, I remember having trouble wrapping my mind around the concept of a pointer.
+                        Apparently this is a common problem among computer science students. I eventually understood that a pointer is essentially a variable that holds a memory address.
+                        The pointer itself is just a number representing that address. Dereference it, and you get the value it points to. It's supposed to be simple, but without a concrete
+                        example of a pointer being manipulated somehow, it might seem a bit abstract.
+                    </p>
+
+                    <p>
+                        A couple years later, I started experimenting with game hacking and reverse engineering. I fell in love with it quickly. I wrote my first trainer for an old
+                        game I used to play a lot, HardWar. Since pointers are crucial concepts in reverse engineering, I came to understand pointers at a much more in-depth level.
+                        More than that, I think a hands-on demonstrative way of learning pointers suits visual learners a lot better.
+                    </p>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image"
+                            src="/assets/images/hardwar.jpg"
+                            alt="Hardwar PC game">
+                        <figcaption class="writeup-image-caption">
+                            HardWar release cover title
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        I'll summarize the basics of this game so the terminology is not lost. In a nutshell, this game takes place on Saturn's moon, Titan. It's a very cyberpunk/dystopian setting.
+                        The moon's craters are cities. Players (or "pilots") fly around in ships called moths, which can hover and are equipped with weapons and targeting systems. Buildings are called "hangars",
+                        and there is a fully-functioning economy in the game. It has a campaign and a multiplayer component as well.
+                    </p>
+
+                </section>
+
+                <!-- ================= WHERE POINTERS COME IN ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Where Pointers Come In</h2>
+
+                    <p>
+                        When you build your first trainer, the first thing you realize about pointers is the difference between static and dynamic pointers. A static pointer is essentially a stable pointer that
+                        can be found at the same offset relative to the game's executable or another loaded module every time you open the game. A dynamic pointer is one that is allocated at runtime, and its exact
+                        address will change every time you open the game. 
+                    </p>
+
+                    <p>
+                        So, in order to build a working trainer, you must understand this distinction, and you must be able to use static pointers to find dynamically-allocated memory addresses.
+                        As an example, you might start by finding the dynamic memory address of your player object. But, because you need a stable reference to that pointer, you'd have
+                        to find a static pointer that points to it next.
+                    </p>
+
+                    <p>
+                        It is also important to understand how memory offsets work. An offset is the distance from a base memory address, usually expressed in hexadecimal form.
+                        For example, if an object starts at address <code>0x1000</code> and a value is stored at offset <code>0x30</code> of that structure, then that value's absolute
+                        address would be <code>0x1030</code>.
+                    </p>
+
+                </section>
+
+                <!-- ================= POINTER CHAINS ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Pointer Chains</h2>
+
+                    <p>
+                        When I wrote my first trainer, I thought an insta-kill feature would be pretty funny. You target an enemy pilot, and their moth instantly explodes.
+                        I had some other ideas for what I wanted to implement. I wanted a trainer that had:
+                    </p>
+
+                    <ul class="writeup-detail-list">
+                        <li>Insta-kill</li>
+                        <li>Speedhack</li>
+                        <li>Invincibility</li>
+                        <li>Infinite cash</li>
+                        <li>Stall negation</li>
+                    </ul>
+
+                    <p>
+                        Almost all of these require a chain of pointers to be resolved dynamically, mostly through chains of linked structures and sub-structures. The simplest chain in this case would be player cash.
+                        It's directly on the player structure, so the pointer chain would be:
+                    </p>
+
+                    <p>
+                        <code>player</code> → <code>cash</code>
+                    </p>
+
+                    <p>
+                        Insta-kill is the most interesting one because it involves the longest chain of pointer resolutions in order to work. We basically have to, in order, resolve:
+                    </p>
+
+                    <ul class="writeup-detail-list">
+                        <li>Player pointer</li>
+                        <li>Player location (moth)</li>
+                        <li>Player moth's current target (enemy moth)</li>
+                        <li>Enemy moth's damage value</li>
+                    </ul>
+
+                    <p>
+                        So, visualized, the full sequence is:
+                    </p>
+
+                    <p>
+                        <code>player</code> → <code>location</code> → <code>target</code> → <code>damage</code>
+                    </p>
+
+                    <p>
+                        To access these values, the trainer needs to follow a series of pointers until it reaches the target memory address.
+                        I used a helper function that takes a base address and a list of offsets, then resolves the chain.
+                    </p>
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">C++</span>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+
+    <pre><code>uintptr_t FindDmaAddress(HANDLE hProc, uintptr_t ptr, std::vector&lt;unsigned int&gt; offsets)
+{
+    uintptr_t address = ptr;
+
+    for (unsigned int i = 0; i &lt; offsets.size(); i++)
+    {
+        ReadProcessMemory(hProc, (BYTE*)address, &amp;address, sizeof(address), 0);
+        address += offsets[i];
+    }
+
+    return address;
+}
+</code></pre>
+</div>
+
+                    <p class="code-block-caption">
+                        Pointer resolution function adapted from a <a href="https://guidedhacking.com/threads/finddmaaddy-c-multilevel-pointer-function.6292/" target="_blank" rel="noopener noreferrer">Guided Hacking</a> tutorial
+                    </p>
+
+                    <p>
+                        This function starts with the base address passed in, iterates through the list of offsets, and dereferences the pointer at each step before adding the
+                        corresponding offset. Once all offsets have been processed, it returns the final memory address.
+                    </p>
+
+                </section>
+
+                <!-- ================= RESOLVING POINTER CHAINS ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Resolving Pointer Chains</h2>
+
+                    <p>
+                        So the trainer I wrote starts with a stable module-relative pointer: <code>HardwarW.exe + 0x11D9AC</code>. This holds a pointer to the
+                        <code>player</code> object. All the other pointer chains are derived from this. The code blocks below show how the
+                        pointer chains are resolved for each of the cheat features. The reading and writing of the values are performed in a loop,
+                        but the loop has been omitted for simplicity. Note that <code>ReadProcessMemory()</code> and <code>WriteProcessMemory()</code>
+                        come from the Windows API.
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">C++</span>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+
+    <pre><code>// Cash is accessed through a single pointer dereference and field offset
+std::vector&lt;unsigned int&gt; cashOffset = {0x03C};
+
+uintptr_t cashAddress = FindDmaAddress(hProcess, dynamicPtrBaseAddress, cashOffset);
+
+ReadProcessMemory(hProcess, (BYTE*)cashAddress, &amp;cash, sizeof(cash), nullptr);
+
+// Force cash to max value
+if ((cash &lt; MAX_CASH) &amp;&amp; (playerAddress != NULL))
+{
+    WriteProcessMemory(hProcess, (BYTE*)cashAddress, &amp;MAX_CASH, sizeof(MAX_CASH), nullptr);
+}
+</code></pre>
+</div>
+
+                    <p>
+                        So, that's how the player pointer is dereferenced, the cash address is resolved, and the value is modified.
+                        We use a conditional to ensure that the cash stays at a certain value.
+                        Since this requires only one pointer dereference, it's the simplest example.
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">C++</span>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+
+    <pre><code>// Thrust is accessed through two pointer dereferences and a field offset
+std::vector&lt;unsigned int&gt; thrustOffsets = {0x030, 0x438};
+
+uintptr_t thrustAddress = FindDmaAddress(hProcess, dynamicPtrBaseAddress, thrustOffsets);
+
+ReadProcessMemory(hProcess, (BYTE*)thrustAddress, &amp;thrust, sizeof(thrust), nullptr);
+
+// Increase thrust to 6x maximum
+DWORD newThrust = MAX_THRUST * 6;
+
+// Apply speedhack when in flight
+if ((bSpeedHack) &amp;&amp; (mothStatus != IN_HANGAR))
+{
+    WriteProcessMemory(hProcess, (BYTE*)thrustAddress, &amp;newThrust, sizeof(newThrust), nullptr);
+}
+</code></pre>
+</div>
+
+
+                    <p>
+                        The speedhack here involves the first multi-level pointer chain. Starting from the player base pointer, it adds <code>0x30</code> to
+                        the player's location pointer (in this case, a moth), then dereferences it. It then adds <code>0x438</code> to access the moth's thrust value,
+                        and increases it to a value much higher than what the game permits under normal circumstances.
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">C++</span>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+
+    <pre><code>// Target structure damage is accessed through three pointer dereferences and a field offset
+std::vector&lt;unsigned int&gt; targetStructureDmgOffsets = {0x030, 0x1F0, 0x29C};
+
+uintptr_t targetStructureDmgAddress = FindDmaAddress(hProcess, dynamicPtrBaseAddress, targetStructureDmgOffsets);
+
+ReadProcessMemory(hProcess, (BYTE*)targetStructureDmgAddress, &amp;targetStructureDmg, sizeof(targetStructureDmg), nullptr);
+
+// Instantly destroy the targeted moth
+if ((bInstakill) &amp;&amp; (targetType == TYPE_MOTH) &amp;&amp; (targetStructureDmg != MAX_DMG) &amp;&amp; (playerStatus == IN_MOTH) &amp;&amp; (targetStatus != IN_HANGAR))
+{
+    WriteProcessMemory(hProcess, (BYTE*)targetStructureDmgAddress, &amp;MAX_DMG, sizeof(MAX_DMG), nullptr);
+}
+</code></pre>
+</div>
+
+                    <p>
+                        To achieve insta-kill, the trainer starts from the player base pointer, and then adds <code>0x30</code> to locate the player's location (again, a moth).
+                        It then follows the pointer at offset <code>0x1F0</code> to the current target (enemy moth). Finally, it adds <code>0x29C</code> to locate that moth
+                        entity's damage field, and sets it to the maximum value. This makes the targeted moth explode instantly.  
+                    </p>
+
+                </section>
+
+
+                <!-- ================= PUTTING IT ALL TOGETHER ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Putting it All Together</h2>
+
+                    <p>
+                        To ground all of the reverse engineering concepts to the actual code that it originated from, it is useful to visualize the game's structures
+                        as they may have appeared in the original code.  
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">C++</span>
+
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">HIDE</button>
+            <button class="code-block-copy" type="button">COPY</button>
+        </div>
+    </div>
+
+    <pre><code>struct Pilot
+{
+    uint8_t status;     // +0x02C
+    uint32_t location;  // +0x030
+    int32_t cash;       // +0x03C
+};
+
+struct Moth
+{
+    uint32_t target;    // +0x1F0
+    uint32_t damage;    // +0x29C
+    uint32_t thrust;    // +0x438
+};</code></pre>
+</div>
+
+
+                    <p>
+                        Now, this is a rough and simplified abstraction. But basically, in the game's original codebase, there may have been a <code>Pilot</code> struct and a <code>Moth</code> struct
+                        resembling these declarations. When the game gets compiled, references to the members of these structures are translated into instructions that access memory at specific offsets.
+                        In memory and disassembly, we see these members as relative offsets to the main structures.
+                    </p>
+
+                </section>
+
+                <!-- ================= IN-GAME DEMONSTRATION ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">In-Game Demonstration</h2>
+
+                    <figure class="writeup-figure writeup-video-figure">
+                        <video class="writeup-video" controls preload="metadata">
+                            <source src="/assets/videos/hardwar-instakill.mp4" type="video/mp4">
+                            Your browser does not support HTML5 video.
+                        </video>
+
+                        <figcaption class="writeup-image-caption">
+                            Insta-kill demonstration
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        Here is a demonstration of the trainer's insta-kill feature being used in-game. After a moth is targeted, the trainer
+                        traverses the pointer chain and sets the targeted moth's damage value to maximum. The end result is that the targeted moth
+                        explodes instantly.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= CONCLUSION ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Conclusion</h2>
+
+                    <p>
+                        If you're a computer science student, or a programmer trying to learn pointers or data structures at a more intimate level,
+                        I think game hacking is a very fun and interactive way to go about it. You not only get a better understanding of these concepts,
+                        but you also get a satisfying feeling of seeing the end result.
+                    </p>
+
+                    <p>
+                        I'd also like to acknowledge and credit Guided Hacking for getting me started with game hacking and reverse engineering.
+                        They are an excellent resource if you want to get started from zero. Their tutorials are super organized and easy to follow.
+                        I highly recommend checking them out. Links to some of their tutorials that I used when I wrote this trainer are included below.
+                    </p>
+
+                    <div class="writeup-actions">
+                        <a class="btn btn-outline-secondary"
+                        href="https://github.com/JulianOzelRose/HardWar-MultiHack-External"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                            View Source Code
+                        </a>
+                    </div>
+                </section>
+
+
+                <!-- ================= SOURCES ================= -->
+
+                <section class="writeup-detail-block">
+                    <h2 class="writeup-detail-heading">Sources</h2>
+
+                    <ul class="writeup-source-list">
+                        <li>
+                            <a href="https://guidedhacking.com/threads/ghb0-game-hacking-bible-introduction.14450/" target="_blank" rel="noopener noreferrer">
+                                Guided Hacking - Guide - GHB0 - Game Hacking Bible Introduction
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://guidedhacking.com/threads/ghb1-start-here-beginner-guide-to-game-hacking.5911/" target="_blank" rel="noopener noreferrer">
+                                Guided Hacking - GHB1 - Start Here Beginner Guide to Game Hacking
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://guidedhacking.com/threads/how-to-hack-any-game-tutorial-c-trainer-1-external.10897/" target="_blank" rel="noopener noreferrer">
+                                Guided Hacking - How to Hack Any Game Tutorial C++ Trainer #1 - External
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://guidedhacking.com/threads/how-to-hack-any-game-tutorial-c-trainer-2-external-v2.12000/" target="_blank" rel="noopener noreferrer">
+                                Guided Hacking - How to Hack Any Game Tutorial C++ Trainer #2 - External v2
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://guidedhacking.com/threads/finddmaaddy-c-multilevel-pointer-function.6292/" target="_blank" rel="noopener noreferrer">
+                                Guided Hacking - FindDMAAddy - C++ Multilevel Pointer Function
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+
+            </article>
+
+        </div>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/project-data.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+</body>
+
+</html>
