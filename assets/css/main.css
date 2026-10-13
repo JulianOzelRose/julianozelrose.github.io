@@ -90,11 +90,11 @@ a:hover {
 }
 
 .btn-primary:hover,
-.btn-primary:focus,
+.btn-primary:focus-visible,
 .btn-outline-primary:hover,
-.btn-outline-primary:focus,
+.btn-outline-primary:focus-visible,
 .btn-outline-secondary:hover,
-.btn-outline-secondary:focus {
+.btn-outline-secondary:focus-visible {
     background: var(--nfo-white);
     border-color: var(--nfo-white);
     color: var(--nfo-black);
@@ -152,8 +152,9 @@ a:hover {
 }
 
 .navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus,
-.navbar-nav .nav-link.active {
+.navbar-nav .nav-link:focus-visible,
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
     color: var(--nfo-white);
 }
 
@@ -198,7 +199,7 @@ a:hover {
 }
 
 .dropdown-item:hover,
-.dropdown-item:focus,
+.dropdown-item:focus-visible,
 .dropdown-item.active {
     background: var(--nfo-white);
     color: var(--nfo-black);
@@ -1150,9 +1151,9 @@ a:hover {
 }
 
 .code-block-copy:hover,
-.code-block-copy:focus,
+.code-block-copy:focus-visible,
 .code-block-toggle:hover,
-.code-block-toggle:focus {
+.code-block-toggle:focus-visible {
     background: var(--nfo-white);
     color: var(--nfo-black);
     border-color: var(--nfo-white);
@@ -1247,7 +1248,7 @@ a:hover {
 }
 
 .writeup-source-list a:hover,
-.writeup-source-list a:focus {
+.writeup-source-list a:focus-visible {
     color: var(--nfo-white);
     text-decoration-color: var(--nfo-white);
 }
@@ -1300,9 +1301,9 @@ a:hover {
 }
 
 .hex-block-copy:hover,
-.hex-block-copy:focus,
+.hex-block-copy:focus-visible,
 .hex-block-toggle:hover,
-.hex-block-toggle:focus {
+.hex-block-toggle:focus-visible {
     background: var(--nfo-white);
     color: var(--nfo-black);
     border-color: var(--nfo-white);
@@ -1456,7 +1457,7 @@ a:hover {
 }
 
 .project-binaries-close:hover,
-.project-binaries-close:focus {
+.project-binaries-close:focus-visible {
     background: var(--nfo-white);
     color: var(--nfo-black);
 }
@@ -1534,9 +1535,9 @@ a:hover {
 }
 
 .binary-download-button:hover,
-.binary-download-button:focus,
+.binary-download-button:focus-visible,
 .project-binaries-footer-close:hover,
-.project-binaries-footer-close:focus {
+.project-binaries-footer-close:focus-visible {
     background: var(--nfo-white);
     color: var(--nfo-black);
     border-color: var(--nfo-white);
