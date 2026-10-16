@@ -1410,6 +1410,17 @@ a:hover {
     white-space: nowrap;
 }
 
+/* Compact Writeup Tables */
+
+.writeup-table-wrapper.compact {
+    width: 100%;
+    max-width: 350px;
+}
+
+.writeup-table-wrapper.compact .writeup-table {
+    min-width: 0;
+}
+
 /* =========================================================
    Project Binaries Modal
    ========================================================= */

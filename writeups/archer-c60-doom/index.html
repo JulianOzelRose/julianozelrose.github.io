@@ -1,0 +1,832 @@
+<!-- /writeups/archer-c60-doom/index.html -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Hacking the TP-Link Archer C60 to Play DOOM | Julian Ozel Rose</title>
+
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+
+    <div id="navbar"></div>
+
+
+    <main class="writeup-detail-page">
+
+        <div class="writeup-detail-container container">
+
+            <!-- ================= HEADER ================= -->
+
+            <header class="writeup-detail-header">
+
+                <h1 class="writeup-detail-title">
+                    Hacking the TP-Link Archer C60 to Play DOOM
+                </h1>
+
+                <p class="writeup-detail-category">
+                    Hardware Hacking / Embedded Linux
+                </p>
+
+
+                <p class="writeup-detail-intro">
+                    Porting DOOM to an embedded Linux router by gaining
+                    root shell access through UART, implementing terminal
+                    rendering, and cross-compiling for MIPS32 big-endian Linux.
+                </p>
+
+                <div class="writeup-detail-meta">
+                    10-17-2026
+                </div>
+
+            </header>
+
+
+            <article class="writeup-detail-content">
+
+
+                <!-- ================= INTRODUCTION ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Introduction
+                    </h2>
+
+                    <p>
+                        My goal in this project was pretty simple: get a router to play DOOM. The cool thing about DOOM is that it is open source
+                        and has minimal dependencies. So if you have the right toolchain, you can compile DOOM to run on just about anything.
+                        Basically if it has a screen and a CPU, it can likely play DOOM.
+                    </p>
+
+                    <p>
+                        A router, of course, has no screen (at least most models don't). But, modern routers typically run a stripped-down version of embedded Linux
+                        as their operating system, so they make good targets for this kind of project. My plan for achieving my goal
+                        started with obtaining a root shell via the UART port, modifying DOOM's source to display properly on a terminal,
+                        cross-compiling it for the router's architecture and environment, then making whatever adjustments were necessary to make it playable.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= HARDWARE RECONNAISSANCE ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Hardware Reconnaissance
+                    </h2>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c60-pcb.jpg"
+                            alt="TP-Link Archer C60 router PCB inside its housing">
+
+                        <figcaption class="writeup-image-caption">
+                            TP-Link Archer C60 PCB inside its housing
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        I ended up ordering a TP-Link Archer C60. The specific hardware revision and region are V3.0 (KR).
+                        Notice the exposed UART pads on the top left corner of the PCB. That was the main attack vector.
+                        Unfortunately, merely having exposed UART pads doesn't guarantee a shell. Sometimes it's read-only,
+                        sometimes RX is disconnected, sometimes there's authentication, sometimes it's disabled on the firmware level, etc...
+                    </p>
+
+
+                    <p>
+                        Usually, if it's a later model, it's going to be some combination of those protective measures.
+                        It can become a real pain to deal with if you just want a shell so you can mess around.
+                        But if you want an easy shell, you basically have to play revision lottery and pray that
+                        the one you ordered isn't heavily locked down.
+                    </p>
+
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c60-uart.jpg"
+                            alt="TP-Link Archer C60 UART port with soldered header pins">
+
+                        <figcaption class="writeup-image-caption">
+                            UART port with header pins soldered onto the PCB
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        So after I identified the UART pads, I soldered some header pins onto them. The router's UART pins
+                        were not labeled, so I had to figure out which pin was which. UART layout is usually VCC, GND, RX, TX.
+                    </p>
+
+                    <p>
+                        Using continuity mode on my multimeter, I located GND by using the metal pad in the middle of the PCB as
+                        one point, and testing it against each pin until I got a chirp. Then I knew which pin was GND.
+                    </p>
+
+                    <p>
+                        With GND known, I was then able to test the voltages of the other pins. One was giving a steady 3.3v.
+                        I concluded that was likely VCC. Another one was giving ~2V, so I figured that was TX. The last one
+                        was dead silent, so I figured it must be RX.
+                    </p>
+
+                    <p>
+                        The layout of the router's UART pins (starting from the top) is:
+                    </p>
+
+                    <div class="writeup-table-wrapper compact">
+
+                        <table class="writeup-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Pin</th>
+                                    <th>Function</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td class="writeup-table-code">Pin 1</td>
+                                    <td class="writeup-table-code">TX</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="writeup-table-code">Pin 2</td>
+                                    <td class="writeup-table-code">RX</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="writeup-table-code">Pin 3</td>
+                                    <td class="writeup-table-code">GND</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="writeup-table-code">Pin 4</td>
+                                    <td class="writeup-table-code">VCC</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- ================= ROOT ACCESS ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Obtaining Root Access
+                    </h2>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c60-uart-ttl.jpg"
+                            alt="USB-to-TTL serial adapter connected to the TP-Link Archer C60 UART header">
+
+                        <figcaption class="writeup-image-caption">
+                            USB-to-TTL serial adapter connected to the router's UART header
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        At this point, I have an exposed UART, which I know runs at 3.3v, and I'm reasonably confident of the pin layout.
+                        So I connect it to my TTL adapter, plug it into my PC and fire up PuTTy. I used a baud rate of 115200, 8N1, no flow control.
+                        Now to just see if I guessed right and won the revision lottery...
+                    </p>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c60-root-shell.png"
+                            alt="Root shell access on the TP-Link Archer C60 router">
+
+                        <figcaption class="writeup-image-caption">
+                            Root shell obtained on the TP-Link Archer C60
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        ... And we're dropped directly into a root shell. Also, the router can receive commands, so it's
+                        a bidirectional terminal. Jackpot. I started by running a few commands to check the router's CPU and memory to see
+                        how feasible running DOOM on it would be.
+                    </p>
+
+                    <div class="writeup-table-wrapper">
+
+                        <table class="writeup-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Specification</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td>SoC</td>
+                                    <td class="writeup-table-code">Qualcomm Atheros QCA956X</td>
+                                </tr>
+
+                                <tr>
+                                    <td>CPU</td>
+                                    <td class="writeup-table-code">MIPS 74Kc V5.0 (Single-Core)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Architecture</td>
+                                    <td class="writeup-table-code">MIPS32 Big-Endian</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Operating System</td>
+                                    <td class="writeup-table-code">Linux 3.3.8</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Total RAM</td>
+                                    <td class="writeup-table-code">63.2 MB</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Free RAM</td>
+                                    <td class="writeup-table-code">25.2 MB</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Temporary Storage</td>
+                                    <td class="writeup-table-code">/tmp (31.7 MB tmpfs)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Swap</td>
+                                    <td class="writeup-table-code">None</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p>
+                        So we're looking at a MIPS32 (BE) router with about 32 MB of maximum writable storage, and a very
+                        old version of Linux. Given that DOOM's main binary is about 700 KB, and the WAD file is about 12 MB,
+                        this is actually quite promising.
+                    </p>
+
+                    <p>
+                        Also, the router's BusyBox has <code>tftp</code>, so we can transfer files to and from the router.
+                    </p>
+
+
+                </section>
+
+
+                <!-- ================= CROSS-COMPILATION ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Cross-Compilation for MIPS32
+                    </h2>
+
+                    <p>
+                        I knew I would have to modify the game somehow to be able to display properly on a terminal. But first, I had
+                        to figure out how to cross-compile it. Since the router uses embedded Linux, I used Buildroot to generate my
+                        cross-compilation toolchain. I used the following compilation settings for Buildroot:
+                    </p>
+
+                    <div class="writeup-table-wrapper">
+
+                        <table class="writeup-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <td>Target Architecture</td>
+                                    <td class="writeup-table-code">MIPS (Big Endian)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>CPU Architecture</td>
+                                    <td class="writeup-table-code">MIPS32 Release 2</td>
+                                </tr>
+
+                                <tr>
+                                    <td>CPU Model</td>
+                                    <td class="writeup-table-code">MIPS 74Kc</td>
+                                </tr>
+
+                                <tr>
+                                    <td>ABI</td>
+                                    <td class="writeup-table-code">O32 (32-bit)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Floating Point</td>
+                                    <td class="writeup-table-code">Software (Soft-Float)</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Toolchain Type</td>
+                                    <td class="writeup-table-code">Buildroot Internal</td>
+                                </tr>
+
+                                <tr>
+                                    <td>C Library</td>
+                                    <td class="writeup-table-code">uClibc-ng</td>
+                                </tr>
+
+                                <tr>
+                                    <td>GCC Version</td>
+                                    <td class="writeup-table-code">14.3.0</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Linux Kernel Headers</td>
+                                    <td class="writeup-table-code">3.3.x</td>
+                                </tr>
+
+                                <tr>
+                                    <td>C++ Support</td>
+                                    <td class="writeup-table-code">Enabled</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Library Linkage</td>
+                                    <td class="writeup-table-code">Shared and Static</td>
+                                </tr>
+
+                                <tr>
+                                    <td>DOOM Linkage</td>
+                                    <td class="writeup-table-code">Static</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Optimization</td>
+                                    <td class="writeup-table-code">-O2</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <p>
+                        Based on the settings alone, it should work on this MIPS router in theory. But I was afraid
+                        the old Linux kernel headers version might cause the compiler to throw errors.
+                        Fortunately, it compiled smoothly to MIPS32 BE. No errors.
+                    </p>
+
+
+                </section>
+
+
+                <!-- ================= PORTING DOOM TO THE TERMINAL ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Porting DOOM to the Terminal
+                    </h2>
+
+                    <p>
+                        Before moving anything to the router, I had to figure out the best way to port DOOM so that it was
+                        playable on a terminal. I started with <a href="https://github.com/ozkl/doomgeneric" target="_blank" rel="noopener noreferrer">doomgeneric</a>
+                        as a base. For my first build, I modified it to use ANSI truecolor, Unicode half-blocks, and framebuffer downsampling for proper terminal display.
+                    </p>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/doomgeneric-ansi.png"
+                            alt="DOOMGeneric running in a terminal using ANSI truecolor and Unicode half-block rendering">
+
+                        <figcaption class="writeup-image-caption">
+                            ANSI DOOM running in a VirtualBox terminal
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        I tested it out a bit in VirtualBox. I thought it basically looked like a super low-resolution DOOM.
+                        But it did run, and it was playable. I did have to modify it a bit further so that the keys were usable
+                        on the terminal, switching to WASD instead of arrow keys for movement.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= DEPLOYMENT AND THE UART BOTTLENECK ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Deployment and the UART Bottleneck
+                    </h2>
+
+                    <p>
+                        Once I had my ANSI build of DOOM working on my VirtualBox terminal, I thought it was
+                        a good enough proof of concept to begin testing it out on the router. Basic deployment
+                        consisted of just uploading the DOOM binary and the WAD file to the <code>/tmp</code> directory
+                        using the router's built-in TFTP client.
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">
+            SHELL
+        </span>
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+    <pre><code># Download files from Windows Tftpd32 server
+cd /tmp
+tftp -g -r doomgeneric-ansi-mipsbe 192.168.0.192
+tftp -g -r DOOM.WAD 192.168.0.192
+
+# Make executables runnable
+chmod +x doomgeneric-ansi-mipsbe
+
+# Launch
+./doomgeneric-ansi-mipsbe -iwad DOOM.WAD</code></pre>
+</div>
+
+                    <p>
+                        It did actually execute on the router, but it felt a bit like a slideshow. It was
+                        pretty much unplayable via UART. At 115200 baud rate 8N1, maximum throughput should
+                        be around 12 KB/s. So the slideshow effect is the result of a bandwidth problem,
+                        not a CPU/resource problem. 
+                    </p>
+
+                    <p>
+                        Instead of using the UART as the primary interface to play the game, I thought spinning up
+                        a Telnet server on the router then connecting from my PC via terminal would be much smoother.
+                        The router's BusyBox lacked the <code>telnetd</code> server function, so I had to go back to my Buildroot
+                        toolchain to compile a new BusyBox for MIPS32 BE. This ended up working much better than trying to
+                        play it through the UART.
+                    </p>
+
+
+                </section>
+
+
+                <!-- ================= RESULTS ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Results
+                    </h2>
+
+                    <figure class="writeup-figure writeup-video-figure">
+                        <video class="writeup-video" controls preload="metadata">
+                            <source src="/assets/videos/router-doom-sixel.mp4" type="video/mp4">
+                            Your browser does not support HTML5 video.
+                        </video>
+
+                        <figcaption class="writeup-image-caption">
+                            SSHDOOM running on the Archer C60 router via Telnet with Sixel graphics
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        Shortly after getting my ANSI build running smoothly on the router, I discovered
+                        that there was in fact already a solution to running DOOM properly on terminal display:
+                        <a href="https://github.com/gmegidish/sshdoom" target="_blank" rel="noopener noreferrer">SSHDOOM</a>.
+                        I didn't really have to modify it much other than just change the movement keys to WASD. I played
+                        it through Telnet via Windows Terminal, and it rendered beautifully.
+                    </p>
+
+                    <p>
+                        The framerate isn't super high, and you're limited to one keypress at a time, but it's definitely playable.
+                        Since it's in a terminal, there is no audio, but the save/load feature actually works.
+                    </p>
+
+                    <p>
+                        I also ended up switching to the shareware version of DOOM's WAD file (DOOM1.WAD). Since it was 4 MB
+                        instead of the stock DOOM's 12 MB WAD file, it ended up freeing some resources, making the gameplay
+                        a bit smoother. Below is the full set of commands I ended up using:
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">
+            SHELL
+        </span>
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+    <pre><code># Download files from Windows Tftpd32 server
+cd /tmp
+tftp -g -r busybox-mipsbe 192.168.0.192
+tftp -g -r doomsixel-mipsbe 192.168.0.192
+tftp -g -r DOOM1.WAD 192.168.0.192
+
+# Make executables runnable
+chmod +x busybox-mipsbe doomsixel-mipsbe
+
+# Start Telnet server
+./busybox-mipsbe telnetd -p 2323 -l /bin/sh
+
+# Windows Terminal (PowerShell)
+py router-telnet.py
+
+# Launch Sixel DOOM (from Python Telnet session)
+cd /tmp
+./doomsixel-mipsbe -iwad DOOM1.WAD
+
+# NOTE: Windows built-in Telnet does not render Sixel correctly
+# Python client forwards Sixel directly to Windows Terminal</code></pre>
+</div>
+
+
+                </section>
+
+
+                <!-- ================= CONCLUSION ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        This project was pretty fun and I'd highly recommend it if you're trying to explore
+                        hardware reverse engineering or embedded systems. With 64 MB of RAM and only 32 MB
+                        being actually writeable, I think DOOM is probably about the most intense game that
+                        this router could handle.
+                    </p>
+
+                    <p>
+                        I think it would have been cool to take the project a few steps further and maybe
+                        mod a screen and basic controller or keypad onto the router. That way you could
+                        play DOOM without having to use Telnet or another device to help display the output.
+                    </p>
+
+                    <div class="writeup-actions">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#projectBinariesModal">
+                            Download Binaries
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- ================= REFERENCES ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        References
+                    </h2>
+
+                    <ul class="writeup-source-list">
+                        <li>
+                            <a href="https://github.com/ozkl/doomgeneric" target="_blank" rel="noopener noreferrer">
+                                GitHub - doomgeneric by ozkl
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/gmegidish/sshdoom" target="_blank" rel="noopener noreferrer">
+                                GitHub - SSHDOOM by Gil Megidish
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/nneonneo/universal-doom/"  target="_blank" rel="noopener noreferrer">
+                                GitHub - universal-doom by Robert Xiao
+                            </a>
+                        </li>
+                    </ul>
+
+                </section>
+
+
+
+            </article>
+
+        </div>
+
+    </main>
+
+    <!-- ================= PROJECT BINARIES MODAL ================= -->
+
+    <div class="modal fade" id="projectBinariesModal" tabindex="-1" aria-labelledby="projectBinariesModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered project-binaries-dialog">
+
+            <div class="modal-content project-binaries-modal">
+
+                <div class="project-binaries-header">
+
+                    <h2 class="project-binaries-title" id="projectBinariesModalLabel">
+                        Project Binaries
+                    </h2>
+
+                    <button class="project-binaries-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="project-binaries-body">
+
+                    <p class="project-binaries-intro">
+                        Select a file to download.
+                    </p>
+
+
+                    <!-- BusyBox -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                BusyBox
+                            </div>
+
+                            <div class="binary-download-meta">
+                                MIPS32 BE / STATIC
+                            </div>
+
+                            <div class="binary-download-description">
+                                BusyBox utility binary used to launch the Telnet server.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/busybox-mipsbe" download>
+                            Download
+                        </a>
+
+                    </div>
+
+
+                    <!-- DOOM Shareware WAD -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                DOOM Shareware WAD
+                            </div>
+
+                            <div class="binary-download-meta">
+                                DOOM1.WAD / SHAREWARE
+                            </div>
+
+                            <div class="binary-download-description">
+                                Original shareware game data containing the first episode of DOOM.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/DOOM1.WAD" download>
+                            Download
+                        </a>
+
+                    </div>
+
+
+                    <!-- DOOMGeneric ANSI -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                DOOMGeneric ANSI
+                            </div>
+
+                            <div class="binary-download-meta">
+                                MIPS32 BE / STATIC
+                            </div>
+
+                            <div class="binary-download-description">
+                                Modified DOOMGeneric binary with ANSI truecolor terminal rendering.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/doomgeneric-ansi-mipsbe" download>
+                            Download
+                        </a>
+
+                    </div>
+
+
+                    <!-- SSHDOOM (Sixel) -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                SSHDOOM (Sixel)
+                            </div>
+
+                            <div class="binary-download-meta">
+                                MIPS32 BE / STATIC
+                            </div>
+
+                            <div class="binary-download-description">
+                                Sixel-enabled DOOM binary with modified keybindings for terminal gameplay.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/doomsixel-mipsbe" download>
+                            Download
+                        </a>
+
+                    </div>
+
+
+                    <!-- Python Telnet Client -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                Python Telnet Client
+                            </div>
+
+                            <div class="binary-download-meta">
+                                PYTHON 3 / WINDOWS TERMINAL
+                            </div>
+
+                            <div class="binary-download-description">
+                                Custom Telnet client that forwards Sixel output directly to Windows Terminal.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/router-telnet.py" download>
+                            Download
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+                <div class="project-binaries-footer">
+
+                    <button class="project-binaries-footer-close" type="button" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div id="footer"></div>
+
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/project-data.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+</body>
+
+</html>
