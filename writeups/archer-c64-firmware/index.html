@@ -1,0 +1,520 @@
+<!-- /writeups/archer-c64-firmware/index.html -->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Hacking the TP-Link Archer C64 Router | Julian Ozel Rose</title>
+
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+
+    <div id="navbar"></div>
+
+
+    <main class="writeup-detail-page">
+
+        <div class="writeup-detail-container container">
+
+            <!-- ================= HEADER ================= -->
+
+            <header class="writeup-detail-header">
+
+                <h1 class="writeup-detail-title">
+                    Hacking the TP-Link Archer C64 Router
+                </h1>
+
+                <p class="writeup-detail-category">
+                    Hardware Hacking / Firmware Reverse Engineering
+                </p>
+
+                <p class="writeup-detail-intro">
+                    Investigating an authentication-locked UART console,
+                    extracting firmware through SPI flash, and reverse engineering
+                    the firmware to recover the router's login credentials.
+                </p>
+
+                <div class="writeup-detail-meta">
+                    10-18-2026
+                </div>
+
+            </header>
+
+
+            <article class="writeup-detail-content">
+
+
+                <!-- ================= INTRODUCTION ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Introduction
+                    </h2>
+
+                    <p>
+                        My apartment had the Internet upgraded recently. The techs who came over installed a new router that
+                        was specific to the new service installed. Since I had bought the old router myself, I ended up with an
+                        extra router I no longer needed. So I decided to take it apart and see what security measures it had.
+                        I initially planned on stopping at a shell, but it just became too interesting to stop.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= HARDWARE RECONNAISSANCE ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Hardware Reconnaissance
+                    </h2>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c64-uart.jpg"
+                            alt="Close-up of the Archer C64's UART pads">
+
+                        <figcaption class="writeup-image-caption">
+                            Close-up of the Archer C64's UART pads
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        The router I had was the TP-Link Archer C64. The hardware revision and region are V1.0 (KR). Removing the housing
+                        was a bit difficult. I had to use a spudger. Upon opening it, I looked for the UART port. The UART pin layout and
+                        voltage are both labeled by the board. The pads are blocked with solder.
+                    </p>
+
+                    <p>
+                        So there are two options: (1) remove the solder and add header pins, or (2) solder the wires directly to the existing solder.
+                        I decided to go with the first one. I think it took me like 30 minutes to properly clear the solder from the UART pads.
+                        I used a desoldering wick and a desolder pump.       
+                    </p>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c64-uart-ttl.jpg"
+                            alt="USB-to-TTL serial adapter connected to the TP-Link Archer C64 UART port">
+
+                        <figcaption class="writeup-image-caption">
+                            USB-to-TTL serial adapter connected to the Archer C64's UART port
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        After soldering header pins to the now-cleared pads, I connected my adapter, opened PuTTy, and booted up the router.
+                        I didn't have a logic analyzer and the UART runs at a pretty uncommon baud rate, so it took me a bit of trial and error
+                        to figure out what it was. But the proper settings for this model and revision are 117000 baud, 8N1, no flow control.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= AUTH-LOCKED CONSOLE ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Auth-Locked Console
+                    </h2>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c64-terminal-auth-lock.png"
+                            alt="Authentication-locked UART terminal on the TP-Link Archer C64">
+
+                        <figcaption class="writeup-image-caption">
+                            Authentication-locked UART console on the Archer C64
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        Fortunately, the RX pin was not disabled, so I had an interactive console and could send commands to the router.
+                        However, the router's console was locked with a password. After 5 attempts, the router makes you wait 30 minutes
+                        to try again.
+                    </p>
+
+                    <p>
+                        I tried some easy/common passwords like "admin", "password", "12345", etc. No luck. I was considering stopping here, but then
+                        I thought this could be an interesting puzzle. The authentication routine is surely stored in the firmware.
+                        So if I can extract it, it might just become a crackme challenge in the form of firmware.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= FIRMWARE EXTRACTION ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Firmware Extraction
+                    </h2>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c64-firmware-ch341a.jpg"
+                            alt="CH341A programmer connected to the TP-Link Archer C64's SPI flash chip">
+
+                        <figcaption class="writeup-image-caption">
+                            CH341A programmer connected to the Archer C64's SPI flash chip
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        After measuring the router's flash chip's VCC pin at 3.3V, I connected my SPI flash programmer to it.
+                        I decided to try to do an in-circuit read with the clips. This tends to be pretty hit-or-miss... sometimes
+                        you end up powering the SoC and it doesn't work.
+                    </p>
+
+                    <p>
+                        If that ends up being the case, you either have to temporarily lift the chip's power pin from the board and
+                        then extract the firmware, or you have to completely desolder the chip from the PCB, solder it onto the SPI programmer,
+                        extract, and then solder it back to the PCB.
+                    </p>
+
+                    <p>
+                        Fortunately in my case, none of that ended up being necessary. The SPI programmer was able to
+                        do an in-circuit read and I got a clean firmware dump on the first try.
+                    </p>
+
+                </section>
+
+
+                <!-- ================= FIRMWARE UNPACKING & REVERSING ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Firmware Unpacking &amp; Reversing
+                    </h2>
+
+                    <p>
+                        Instead of throwing the firmware in Ghidra right away, I decided to run it through Binwalk on my VirtualBox Ubuntu setup.
+                        I found that there were two separate packed U-Boot images, both compressed with LZMA. After decompressing both images,
+                        I tried searching them for the authentication-related strings that I saw in the terminal. It was a dead end, so I
+                        decided to take another look at the UART boot logs.
+                    </p>
+
+ 
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">
+            UART
+        </span>
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+    <pre><code>Autobooting in 1 seconds
+boot from bootm 0x30025000
+## Booting image at 30025000 ...
+
+pHeader-&gt;magic:2876c44d,IMG_MAGIC:2876c44d
+tp Image.
+imgFileEnc=0x30034da8, offset=0xfda8, len=0x1847bc
+Architected cp15 timer(s) running at 20.00MHz (phys).
+tsysGpioInit &gt;&gt;reset nor flash.</code></pre>
+</div>
+
+                    <p>
+                        This portion of the boot log shows up <i>after</i> the second U-Boot executes. This line in particular is very interesting:
+                        <code>imgFileEnc=0x30034da8, offset=0xfda8, len=0x1847bc</code>. These are the offsets of the main image running
+                        that contains the authentication routines. So I extracted the payload from <code>0x34DA8</code> to <code>0x1847BC</code>
+                        from the main firmware image.
+                    </p>
+
+                    <p>
+                        The extracted payload began with an LZMA header, so I decompressed it, then searched for auth-related strings.
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">
+            OUTPUT
+        </span>
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+    <pre><code>0x40D7B1  Console logout success
+0x40D8B9  console exit.
+0x40DA1C  Password:
+0x40DA63  Console login success.
+0x40DA7B  Incorrect passwords(%d/%d).</code></pre>
+</div>
+
+                    <p>
+                        So, we have the password prompt string, the incorrect password string, and the correct password string.
+                        I threw the decompressed payload into Ghidra to begin searching for the authentication routine, hoping
+                        to eventually find something like a <code>strcmp</code> and eventually the actual password string.
+                    </p>
+
+
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-language">
+            C
+        </span>
+        <div class="block-controls">
+            <button class="code-block-toggle" type="button">
+                HIDE
+            </button>
+            <button class="code-block-copy" type="button">
+                COPY
+            </button>
+        </div>
+    </div>
+    <pre><code>if (*DAT_00319b78 &lt; 5) {                    // Failed login counter
+    iVar7 = FUN_0035d14c(in_r12 + -0x230);
+    uVar8 = DAT_00319b80;                   // Expected password string
+
+    if (iVar7 != 0) {
+        *(undefined8 *)puVar4 = uVar28;
+        iVar7 = FUN_0035e29c(uVar8, in_r12 + -0x230);   // Compare user-entered string
+        uVar8 = DAT_00319b88;                           // Incorrect password string
+        puVar12 = DAT_00319b44;                         // Auth state flag
+
+        if (iVar7 == 0) {
+            *puVar6 = 0;
+            *puVar12 = 1;
+            uVar8 = DAT_00319b84;
+            goto LAB_003192d0;
+        }
+
+        uVar19 = *puVar6;
+        *puVar6 = uVar19 + 1;
+        FUN_003632e0(uVar8, uVar19 + 1, 5);
+    }
+
+    uVar8 = DAT_00319b4c;
+    if (*puVar6 &lt; 5) goto LAB_003192d0;
+}</code></pre>
+</div>
+
+
+                    <p>
+                        Ghidra wasn't able to correctly map the strings to XREFs, so some pointer math was
+                        needed to locate the auth subroutine based on the string table. But this is the
+                        authentication block. <code>DAT_00319b80</code> gives the password pointer <code>0x4063406C</code>.
+                        Subtracting the firmware image base address of <code>0x40205000</code> gives the file offset
+                        at <code>0x42F06C</code>, where the expected password is stored in plaintext: 
+                    </p>
+
+                    <p>
+                        <b>gzzgSEz...</b>
+                    </p>
+
+
+                </section>
+
+
+                <!-- ================= RESULT ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Result
+                    </h2>
+
+                    <figure class="writeup-figure">
+                        <img class="writeup-image" src="/assets/images/archer-c64-terminal-auth-success.png"
+                            alt="Successful UART console authentication on the TP-Link Archer C64">
+
+                        <figcaption class="writeup-image-caption">
+                            Password accepted by the Archer C64 UART console
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        And we're in. Once past the auth, you can use <code>help</code> for a list of commands.
+                        They're mostly debugging commands, as this is TP-Link's custom TPOS. If you want to
+                        mess with the router further and try to port stuff onto it, then the most useful one
+                        is probably <code>tftp</code>.
+                    </p>
+
+                    <p>
+                        I didn't try porting anything to it, but it actually might not be a bad target.
+                        It does have a 1.2 GHz CPU, which is pretty fast for a router. However, it only has 64 MB of RAM.
+                        The architecture is ARM32 (LE).
+                    </p>
+
+                </section>
+
+
+                <!-- ================= CONCLUSION ================= -->
+
+                <section class="writeup-detail-block">
+
+                    <h2 class="writeup-detail-heading">
+                        Conclusion
+                    </h2>
+
+                    <p>
+                        I didn't really think a project would come out of this. I just wanted to look at the router's PCB, gain access to the UART,
+                        see if a shell was possible, and move on. But it quickly turned into a firmware RE-based crackme, so it was just too interesting to pass up.
+                    </p>
+
+                    <p>
+                        It's kind of amusing to see the lengths that these companies go through to make sure you don't achieve a shell on their routers:
+                    </p>
+
+                    <ul class="writeup-detail-list">
+                        <li>Disconnecting the PCB line for UART RX</li>
+                        <li>Shorting RX with a resistor</li>
+                        <li>Disabling RX via the firmware</li>
+                        <li>Adding an authentication wall</li>
+                        <li>Some combination of the above</li>
+                    </ul>
+
+                    <p>
+                        If I didn't know any better, with this kind of layered security, I'd assume the nuclear launch codes are stored somewhere on these things.
+                        It's almost anticlimactic when you bypass all that hardware and software-level security only to find out they're protecting some
+                        basic RTOS that doesn't really do much anyway.
+                    </p>
+                    
+                    <p>
+                        At this rate, they might as well just start physically booby-trapping the PCB so you can't access their precious RTOS.
+                    </p>
+
+                    <div class="writeup-actions">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#firmwareDownloadsModal">
+                            Download Firmware
+                        </button>
+                    </div>
+
+                </section>
+
+
+            </article>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= FIRMWARE DOWNLOADS MODAL ================= -->
+
+    <div class="modal fade" id="firmwareDownloadsModal" tabindex="-1" aria-labelledby="firmwareDownloadsModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered project-binaries-dialog">
+
+            <div class="modal-content project-binaries-modal">
+
+                <div class="project-binaries-header">
+
+                    <h2 class="project-binaries-title" id="firmwareDownloadsModalLabel">
+                        Firmware Downloads
+                    </h2>
+
+                    <button class="project-binaries-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="project-binaries-body">
+
+                    <p class="project-binaries-intro">
+                        Select a file to download.
+                    </p>
+
+
+                    <!-- Original Firmware Dump -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                Firmware Dump
+                            </div>
+
+                            <div class="binary-download-meta">
+                                ARM32 LE / RAW SPI DUMP
+                            </div>
+
+                            <div class="binary-download-description">
+                                Raw SPI flash firmware dump extracted from the Archer C64.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/Archer-C64-v1-KR.bin" download>
+                            Download
+                        </a>
+
+                    </div>
+
+
+                    <!-- TPOS Firmware -->
+
+                    <div class="binary-download-item">
+
+                        <div class="binary-download-info">
+
+                            <div class="binary-download-name">
+                                TPOS Firmware
+                            </div>
+
+                            <div class="binary-download-meta">
+                                ARM32 LE / TPOS IMAGE
+                            </div>
+
+                            <div class="binary-download-description">
+                                Extracted TPOS firmware image from the Archer C64 firmware dump.
+                            </div>
+
+                        </div>
+
+                        <a class="binary-download-button" href="/assets/files/Archer-C64-v1-KR-TPOS.bin" download>
+                            Download
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="project-binaries-footer">
+
+                    <button class="project-binaries-footer-close" type="button" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div id="footer"></div>
+
+
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/project-data.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+</body>
+
+</html>
